@@ -1,0 +1,32 @@
+{
+	"manifest_version":	2,
+	"name":	"Word Replacer!",
+	"version":	"1.0",
+	"description":	"My first Chrome Extension",
+	"browser_action":
+	{
+		"default_icon":	"off"
+	},
+	"background":
+	{
+		"scripts":	["background.js"]
+	},
+	"_comment": 
+	{ 
+		"default_popup": "wordReplacer.html",
+		"content_scripts":
+		[
+			{
+				"matches":	["*://*/*"],
+				"js":	["myscript.js"],
+				"run_at":	"document_end"
+			}
+		]
+	},
+	"permissions": [
+		"tabs",
+		"notifications",
+		"http://*/",
+		"https://*/"
+	]
+}
