@@ -26,11 +26,11 @@ function handleText(textNode)
 {
 	var v = textNode.nodeValue;
 
-	v = v.replace(/\bsimbu\b/g, "sombu");
-	v = v.replace(/\bSimbu\b/g, "Sombu");
-	v = v.replace(/\bSIMBU\b/g, "SOMBU");
-	v = v.replace(/\bSilambarasan\b/g, "Sombu");
-	v = v.replace(/\bsilambarasan\b/g, "sombu");
+	v = v.replace(/\bsimbu\b/g, "str");
+	v = v.replace(/\bSimbu\b/g, "Str");
+	v = v.replace(/\bSIMBU\b/g, "STR");
+	v = v.replace(/\bSilambarasan\b/g, "STR");
+	v = v.replace(/\bsilambarasan\b/g, "str");
 
 	textNode.nodeValue = v;
 }
