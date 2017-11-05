@@ -1,0 +1,25 @@
+{
+	"manifest_version":	2,
+	"name":	"Doppler Effect!",
+	"version":	"1.0",
+	"description":	"Control Chrome Browser with your hands!",
+	"browser_action":
+	{
+		"default_icon":	"off"
+	},
+	"content_scripts":
+	[
+		{
+			"matches":	["<all_urls>"],
+			"js":	["soundWave.js"]
+		}
+	],
+	"background":
+	{
+		"scripts":	["background.js"]
+	},
+	"permissions": [
+		"activeTab",
+		"<all_urls>"
+	]
+}
