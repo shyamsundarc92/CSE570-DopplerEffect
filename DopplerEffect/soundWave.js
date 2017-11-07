@@ -8,24 +8,19 @@ var audioContext = new AudioContext();
 var oscillator = audioContext.createOscillator();
 oscillator.start();
 
-/*
- * Create Analyser for processing the audio data
- */
-var analyser = audioContext.createAnalyser();
-
 var repeat = 0;
 
 /*
  * Map given Frequency to FFT Bin Index
  */
-function mapFreqToIndex(freq) {
+function mapFreqToIndex(freq, analyser) {
 	return Math.round(freq * (analyser.fftSize / audioContext.sampleRate));
 }
 
 /*
  * Map given FFT Bin Index to Frequency
  */
-function mapIndexToFreq(idx) {
+function mapIndexToFreq(idx, analyser) {
 	return Math.round(idx * (audioContext.sampleRate / analyser.fftSize));
 }
 
@@ -34,8 +29,8 @@ function mapIndexToFreq(idx) {
  * -1 - Left Side Limit
  * 1  - Right Side Limit
  */
-function findPeakLimits(audioData, direction, peakTone) {
-	var peakToneBin = mapFreqToIndex(peakTone);
+function findPeakLimits(audioData, direction, peakTone, analyser) {
+	var peakToneBin = mapFreqToIndex(peakTone, analyser);
 	/*
 	 * As determined by the paper
 	 */
@@ -77,8 +72,8 @@ function findPeakLimits(audioData, direction, peakTone) {
  * Scans for the presence of a second peak with amplitude atleast 30% (as determined by the paper)
  * beyond the limits of the pilot tone peak and if present, finds its limits
  */
-function checkForSecondaryPeak(audioData, direction, prevBoundary) {
-	var primaryToneBin = mapFreqToIndex(oscillator.frequency.value);
+function checkForSecondaryPeak(audioData, direction, prevBoundary, analyser) {
+	var primaryToneBin = mapFreqToIndex(oscillator.frequency.value, analyser);
 	/*
 	 * As determined by the paper
 	 */
@@ -114,7 +109,7 @@ function checkForSecondaryPeak(audioData, direction, prevBoundary) {
 	}
 
 	if (found) {
-		return findPeakLimits(audioData, direction, mapIndexToFreq(boundary));
+		return findPeakLimits(audioData, direction, mapIndexToFreq(boundary, analyser));
 	}
 
 	return -1;
@@ -124,7 +119,7 @@ function checkForSecondaryPeak(audioData, direction, prevBoundary) {
 /*
  * Fetch and process data from the microphone
  */
-function processAudioData() {
+function processAudioData(analyser) {
 	var audioData = new Uint8Array(analyser.frequencyBinCount);
 
 	analyser.getByteFrequencyData(audioData);
@@ -132,18 +127,18 @@ function processAudioData() {
 	/*
 	 * Find the limits of the pilot tone peak
 	 */
-	var leftBoundary = findPeakLimits(audioData, -1, oscillator.frequency.value);
+	var leftBoundary = findPeakLimits(audioData, -1, oscillator.frequency.value, analyser);
 	
-	var rightBoundary = findPeakLimits(audioData, 1, oscillator.frequency.value); 
+	var rightBoundary = findPeakLimits(audioData, 1, oscillator.frequency.value, analyser); 
 
 	/*
 	 * Do a scan for the second peak beyond of the pilot tone peak
 	 * and if a peak with atleast 30% of the amplitude of the pilot tone is
 	 * found, find its limits and change boundaries found earlier
 	 */
-	var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary);
+	var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary, analyser);
 
-	var secondaryRightBoundary = checkForSecondaryPeak(audioData, 1, rightBoundary);
+	var secondaryRightBoundary = checkForSecondaryPeak(audioData, 1, rightBoundary, analyser);
 
 	console.log(leftBoundary + ":" + rightBoundary);
 
@@ -157,7 +152,7 @@ function processAudioData() {
 		rightBoundary = secondaryRightBoundary;
 	}
 
-	repeat = setTimeout(processAudioData, 1);
+	repeat = setTimeout(processAudioData, 1, analyser);
 
 	return {"left" : leftBoundary, "right" : rightBoundary};
 }
@@ -168,7 +163,7 @@ function processAudioData() {
  *
  * Peak at the optimal frequency will be bigger than the next highe * peak by atleast 3dB
  */ 
-function findOptimalFrequency() {
+function findOptimalFrequency(analyser) {
 	var start = 18000;
 	var end = 22000;
 	var maxAmplitude = -1, optimalFrequency = 0;
@@ -180,7 +175,9 @@ function findOptimalFrequency() {
 
 		analyser.getByteFrequencyData(audioData);
 
-		idx = mapFreqToIndex(i);
+		idx = mapFreqToIndex(i, analyser);
+		
+		console.log(i, audioData[idx]);
 
 		if (audioData[idx] > maxAmplitude) {
 			maxAmplitude = audioData[idx];
@@ -193,14 +190,12 @@ function findOptimalFrequency() {
 	oscillator.frequency.value = optimalFrequency;
 }
 
-function startSoundWave(findOptFreq) {	
+function startSoundWave(analyser) {	
 	oscillator.connect(audioContext.destination);
 
-	if (findOptFreq) {
-		findOptimalFrequency();
-	}
-
-	processAudioData();
+	findOptimalFrequency(analyser);
+	
+	//processAudioData(analyser);
 }
 
 function stopSoundWave() {
@@ -210,27 +205,31 @@ function stopSoundWave() {
 }
 
 function initSoundWave() {
-	navigator.mediaDevices.getUserMedia({audio: { optional: [{ echoCancellation: false }] }, function(streamSource) {
+	navigator.getMedia_ = (navigator.getUserMedia || navigator.webKitGetUserMedia);
+
+	navigator.getMedia_({audio: { optional: [{ echoCancellation: false }] } }, function(streamSource) {
+		console.log("Connect mic");
+		/*
+	 	 * Create Analyser for processing the audio data
+		 */
+   		var analyser = audioContext.createAnalyser();
+
 		/*
 		 * Create Microphone audio source and connect analyser to it
 		 */
 		var source = audioContext.createMediaStreamSource(streamSource);
 		source.connect(analyser);
-	}});
-
-	startSoundWave(true);
+		startSoundWave(analyser);
+	}, function() { alert("Please allow Mic Access")});
 }
 
 chrome.runtime.onMessage.addListener(
 	function(request, sender) {
 	console.log("Message Received");
 	
-	if (request.message == "init") {
+	if (request.message == "init" || request.message == "start") {
 		console.log("Init & Start");
 		initSoundWave();
-	} else if (request.message == "start") {
-		console.log("Start");
-		startSoundWave(false);
 	} else if (request.message == "stop") {
 		console.log("Stop");
 		stopSoundWave();
