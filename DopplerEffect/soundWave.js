@@ -50,10 +50,10 @@ function findPeakLimits(audioData, direction, peakTone, analyser) {
 
 		var idx = 0;
 
-		idx = peakToneBin + boundary*direction;		
+		idx = peakToneBin + boundary * direction;		
 
 		var ratio = audioData[idx] / audioData[peakToneBin];
-		//console.log(idx, audioData[idx], audioData[peakToneBin], ratio);
+		
 		if (ratio < amplitudeDropOffLimit) {
 			break;
 		}
@@ -89,11 +89,11 @@ function checkForSecondaryPeak(audioData, direction, prevBoundary, analyser) {
 		var idx = 0;
 
 		
-		idx = prevBoundary + boundary*direction;
+		idx = prevBoundary + boundary * direction;
 		
 
 		var ratio = audioData[idx] / audioData[primaryToneBin];
-		console.log(idx, audioData[idx], audioData[primaryToneBin], ratio);
+		
 		if (ratio >= secondaryPeakThreshold) {
 			found = true;
 			break;
@@ -131,9 +131,8 @@ function processAudioData(analyser) {
 	 * and if a peak with atleast 30% of the amplitude of the pilot tone is
 	 * found, find its limits and change boundaries found earlier
 	 */
-	console.log("left");
 	var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary, analyser);
-	console.log("right");
+	
 	var secondaryRightBoundary = checkForSecondaryPeak(audioData, 1, rightBoundary, analyser);
 
 	console.log("Bound: ", leftBoundary + ":" + rightBoundary);
@@ -201,9 +200,9 @@ function stopSoundWave() {
 }
 
 function initSoundWave() {
-	navigator.getMedia_ = (navigator.getUserMedia || navigator.webKitGetUserMedia);
+	//navigator.getMedia_ = (navigator.getUserMedia || navigator.webKitGetUserMedia);
 
-	navigator.getMedia_({audio: { optional: [{ echoCancellation: false }] } }, function(streamSource) {
+	navigator.getUserMedia({audio: { optional: [{ echoCancellation: false }] } }, function(streamSource) {
 		console.log("Connect mic");
 		/*
 	 	 * Create Analyser for processing the audio data
@@ -214,16 +213,17 @@ function initSoundWave() {
 		 * Create Microphone audio source and connect analyser to it
 		 */
 		var source = audioContext.createMediaStreamSource(streamSource);
+
 		source.connect(analyser);
+		
 		startSoundWave(analyser);
-	}, function() { alert("Please allow Mic Access")});
+	}, function() { alert("Please allow Microphone Access")});
 }
 
-chrome.runtime.onMessage.addListener(
-	function(request, sender) {
+chrome.runtime.onMessage.addListener(function(request, sender) {
 	console.log("Message Received");
 	
-	if (request.message == "init" || request.message == "start") {
+	if (request.message == "start") {
 		console.log("Init & Start");
 		initSoundWave();
 	} else if (request.message == "stop") {
