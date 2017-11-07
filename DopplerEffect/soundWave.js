@@ -50,14 +50,10 @@ function findPeakLimits(audioData, direction, peakTone, analyser) {
 
 		var idx = 0;
 
-		if (boundary == -1) {
-			idx = peakToneBin - boundary;
-		} else {
-			idx = peakToneBin + boundary;
-		}
+		idx = peakToneBin + boundary*direction;		
 
 		var ratio = audioData[idx] / audioData[peakToneBin];
-
+		//console.log(idx, audioData[idx], audioData[peakToneBin], ratio);
 		if (ratio < amplitudeDropOffLimit) {
 			break;
 		}
@@ -92,14 +88,12 @@ function checkForSecondaryPeak(audioData, direction, prevBoundary, analyser) {
 
 		var idx = 0;
 
-		if (boundary == -1) {
-			idx = prevBoundary - boundary;
-		} else {
-			idx = prevBoundary + boundary;
-		}
+		
+		idx = prevBoundary + boundary*direction;
+		
 
 		var ratio = audioData[idx] / audioData[primaryToneBin];
-
+		console.log(idx, audioData[idx], audioData[primaryToneBin], ratio);
 		if (ratio >= secondaryPeakThreshold) {
 			found = true;
 			break;
@@ -127,6 +121,7 @@ function processAudioData(analyser) {
 	/*
 	 * Find the limits of the pilot tone peak
 	 */
+	
 	var leftBoundary = findPeakLimits(audioData, -1, oscillator.frequency.value, analyser);
 	
 	var rightBoundary = findPeakLimits(audioData, 1, oscillator.frequency.value, analyser); 
@@ -136,13 +131,14 @@ function processAudioData(analyser) {
 	 * and if a peak with atleast 30% of the amplitude of the pilot tone is
 	 * found, find its limits and change boundaries found earlier
 	 */
+	console.log("left");
 	var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary, analyser);
-
+	console.log("right");
 	var secondaryRightBoundary = checkForSecondaryPeak(audioData, 1, rightBoundary, analyser);
 
-	console.log(leftBoundary + ":" + rightBoundary);
+	console.log("Bound: ", leftBoundary + ":" + rightBoundary);
 
-	console.log(secondaryLeftBoundary + ";" + secondaryRightBoundary);
+	console.log("Sec Bound: ", secondaryLeftBoundary + ";" + secondaryRightBoundary);
 
 	if (secondaryLeftBoundary != -1) {
 		leftBoundary = secondaryLeftBoundary;
