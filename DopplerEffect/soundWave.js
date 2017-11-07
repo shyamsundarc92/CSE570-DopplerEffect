@@ -152,7 +152,7 @@ function processAudioData() {
 	
 	var rightBoundary = findPeakLimits(audioData, 1, oscillator.frequency.value); 
 	
-	//console.log("Bound: ", leftBoundary + ":" + rightBoundary);
+	console.log("Bound: ", leftBoundary + ":" + rightBoundary);
 
 	/*
 	 * Do a scan for the second peak beyond of the pilot tone peak
@@ -190,7 +190,7 @@ function processAudioData() {
  * Scan all frequencies from 18KHz to 22KHz to find the optimal
  * frequency for use by application
  *
- * Peak at the optimal frequency will be bigger than the next highe * peak by atleast 3dB
+ * Peak at the optimal frequency will be bigger than the next highest peak by atleast 3dB
  */ 
 function findOptimalFrequency() {
 	var start = 18000;
@@ -219,18 +219,12 @@ function findOptimalFrequency() {
 	oscillator.frequency.value = optimalFrequency;
 }
 
-function startSoundWave(isInit) {
+function startSoundWave() {
 	console.log("Freq");
 
 	oscillator.connect(audioContext.destination);
 
-	/*
-	 * If this is the first time this is called for this browser tab
-	 * perform frequenct sweep to find optimal transmission frequency
-	 */
-	if (isInit) {
-		findOptimalFrequency();
-	}
+	findOptimalFrequency();
 
 	processAudioData();
 }
@@ -260,10 +254,11 @@ function initSoundWave() {
 chrome.runtime.onMessage.addListener(function(request, sender) {
 	console.log("Message Received");
 
-	if (request.message == "init") {
+	/*if (request.message == "init") {
 		console.log("Init & Start");
 		initSoundWave();
-	} else if (request.message == "start") {
+	} else*/
+	if (request.message == "start") {
 		console.log("Start");
 		startSoundWave(false);
 	} else if (request.message == "stop") {

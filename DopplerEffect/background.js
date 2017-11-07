@@ -12,11 +12,11 @@ var state = {
 var tabsInUse = {}
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-	if ((tabsInUse[tab.id] == undefined)) {
-		chrome.browserAction.setIcon({path: "on", tabId:tab.id});
-		chrome.tabs.sendMessage(tab.id, {"message": "init"});
-		tabsInUse[tab.id] = state.RUNNING;
-	} else if (tabsInUse[tab.id] == state.STOPPED) {
+	if ((tabsInUse[tab.id] == undefined) || (tabsInUse[tab.id] == state.STOPPED)) {
+		//chrome.browserAction.setIcon({path: "on", tabId:tab.id});
+		//chrome.tabs.sendMessage(tab.id, {"message": "init"});
+		//tabsInUse[tab.id] = state.RUNNING;
+		//} else if {
 		chrome.browserAction.setIcon({path: "on", tabId:tab.id});
 		chrome.tabs.sendMessage(tab.id, {"message": "start"});
 		tabsInUse[tab.id] = state.RUNNING;
