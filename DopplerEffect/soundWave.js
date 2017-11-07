@@ -109,7 +109,7 @@ function checkForSecondaryPeak(audioData, direction, prevBoundary, analyser) {
 	}
 
 	if (found) {
-		return findPeakLimits(audioData, direction, mapIndexToFreq(boundary, analyser));
+		return findPeakLimits(audioData, direction, mapIndexToFreq(boundary, analyser), analyser);
 	}
 
 	return -1;
@@ -195,7 +195,7 @@ function startSoundWave(analyser) {
 
 	findOptimalFrequency(analyser);
 	
-	//processAudioData(analyser);
+	processAudioData(analyser);
 }
 
 function stopSoundWave() {
