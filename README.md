@@ -41,4 +41,24 @@ Fast:
 Diff is > 10 but AMplitude of peak is same as above
 
 
+CASE 2 (Shyam's implementation) at 20500:
 
+Hand movement Up (For volume increase and scroll up) Hand Movement Down (For volume decrease and scroll down) ONLY WRIST:
+
+Positive Difference between bin boundaries
+
+Slow:
+Diff is < 10  and Amplitude of peak is < 75
+
+
+Fast:
+Diff is > 10 but Amplitude of peak is same above
+
+Hand Movement Left (For side scroll and rewind) & Hand Movement Right (For side scroll and fast forward) FULL HAND MOVEMENT
+
+Slow:
+
+Diff is < 10 and Amplitude of peak is > 75
+
+Fast:
+Diff is > 10 but AMplitude of peak is same as above
