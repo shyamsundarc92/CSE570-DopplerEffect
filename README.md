@@ -18,7 +18,7 @@ Tests run so far:
 
 Threshold = 0.005
 
-CASE 1 (Sriram's implementation):
+CASE 1 (Sriram's implementation) Freq 20000 Time 10:
 
 Hand movement Up (For volume increase and scroll up) Hand Movement Down (For volume decrease and scroll down) ONLY WRIST:
 
@@ -41,7 +41,7 @@ Fast:
 Diff is > 10 but AMplitude of peak is same as above
 
 
-CASE 2 (Shyam's implementation) at 20500:
+CASE 2 (Shyam's implementation) at 20000:
 
 Hand movement Up (For volume increase and scroll up) Hand Movement Down (For volume decrease and scroll down) ONLY WRIST:
 
