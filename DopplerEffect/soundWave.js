@@ -45,28 +45,22 @@ function findPeakLimits(audioData, direction, peakTone) {
 	 */
 	var amplitudeDropOffLimit = 0.005;
 
-	var boundary = 1;
+	var boundary = 0;
 
 	/*
 	 * No doppler shift observed in peak tone frequency - return
 	 */
 	if (audioData[peakToneBin] == 0) {
 		console.log("No change");
-		return 0;
+		return boundary;
 	}
 
-	while (boundary <= frequencyBinLimit) {
-		if (direction == -1 && (peakToneBin - boundary) < 0) {
-			boundary = 0;
-			break;
-		} else if (direction == 1 && (peakToneBin + boundary) >= analyser.frequencyBinCount) {
-			boundary = analyser.frequencyBinCount - 1;
+	while (++boundary <= frequencyBinLimit) {
+		var idx = peakToneBin + boundary * direction;
+
+		if ((direction == -1 && idx < 0) || (direction == 1 && idx >= analyser.frequencyBinCount)) {
 			break;
 		}
-
-		var idx = 0;
-
-		idx = peakToneBin + boundary * direction;		
 
 		var ratio = audioData[idx] / audioData[peakToneBin];
 		
@@ -75,8 +69,6 @@ function findPeakLimits(audioData, direction, peakTone) {
 		if (ratio < amplitudeDropOffLimit) {
 			break;
 		}
-		
-		boundary++;
 	}
 
 	if (boundary > frequencyBinLimit) {
@@ -102,18 +94,11 @@ function checkForSecondaryPeak(audioData, direction, prevBoundary) {
 	var found = false;
 
 	while (true) {
-		
-		if (direction == -1 && (prevBoundary - boundary) < 0) {
-			break;
-		} else if (direction == 1 && (prevBoundary + boundary) >= analyser.frequencyBinCount) {
+		idx = primaryToneBin + (boundary + prevBoundary) * direction;
+
+		if ((direction == -1 && idx < 0) && (direction == 1 && idx >= analyser.frequencyBinCount)) {
 			break;
 		}
-
-		var idx = 0;
-
-		
-		idx = prevBoundary + boundary * direction;
-		
 
 		var ratio = audioData[idx] / audioData[primaryToneBin];
 		
@@ -128,7 +113,7 @@ function checkForSecondaryPeak(audioData, direction, prevBoundary) {
 	}
 
 	if (found) {
-		return findPeakLimits(audioData, direction, mapIndexToFreq(primaryToneBin + boundary * direction));
+		return findPeakLimits(audioData, direction, mapIndexToFreq(primaryToneBin + (boundary + prevBoundary) * direction));
 	}
 
 	return -1;
