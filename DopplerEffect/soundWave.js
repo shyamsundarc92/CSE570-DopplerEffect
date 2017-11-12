@@ -6,6 +6,7 @@ var audioContext = new AudioContext();
  * Create an oscillator and configure it for sound tranmission
  */
 var oscillator = audioContext.createOscillator();
+oscillator.frequency.value = 20000; // Optimal Frequency found via experimentation
 oscillator.start();
 
 /*
@@ -85,7 +86,7 @@ function findPeakLimits(audioData, direction, peakTone) {
 function checkForSecondaryPeak(audioData, direction, prevBoundary) {
 	var primaryToneBin = mapFreqToIndex(oscillator.frequency.value);
 	/*
-	 * As determined by the paper
+	 * Determined by experimentation
 	 */
 	var secondaryPeakThreshold = 0.015;
 
@@ -96,7 +97,7 @@ function checkForSecondaryPeak(audioData, direction, prevBoundary) {
 	while (true) {
 		idx = primaryToneBin + (boundary + prevBoundary) * direction;
 
-		if ((direction == -1 && idx < 0) && (direction == 1 && idx >= analyser.frequencyBinCount)) {
+		if ((direction == -1 && idx < 0) || (direction == 1 && idx >= analyser.frequencyBinCount)) {
 			break;
 		}
 
@@ -152,7 +153,7 @@ function processAudioData() {
 		console.log("Secondary Left: ");
 		var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary);
 		
-		if (secondaryLeftBoundary != -1) {
+		if (secondaryLeftBoundary != -1 && secondaryLeftBoundary < leftBoundary) {
 			leftBoundary = secondaryLeftBoundary;
 		}
 	}
@@ -161,60 +162,21 @@ function processAudioData() {
 		console.log("Secondary Right: ");
 		var secondaryRightBoundary = checkForSecondaryPeak(audioData, 1, rightBoundary);
 		
-		if (secondaryRightBoundary != -1) {
+		if (secondaryRightBoundary != -1 && secondaryRightBoundary > rightBoundary) {
 			rightBoundary = secondaryRightBoundary;
 		}
 	}
 
-	repeat = setTimeout(processAudioData, 1);
+	repeat = setTimeout(processAudioData, 10);
 
 	console.log("Final: left: ", leftBoundary, "Right: ", rightBoundary);
 
 	return {"left" : leftBoundary, "right" : rightBoundary};
 }
 
-/*
- * Scan all frequencies from 18KHz to 22KHz to find the optimal
- * frequency for use by application
- *
- * Peak at the optimal frequency will be bigger than the next highest peak by atleast 3dB
- */ 
-function findOptimalFrequency() {
-	var start = 18000;
-	var end = 22000;
-	var maxAmplitude = -1, optimalFrequency = 0;
-	
-	var audioData = new Uint8Array(analyser.frequencyBinCount);
-
-	for (var freq = start; freq <= end; freq++) {
-		oscillator.frequency.value = freq;
-
-		analyser.getByteFrequencyData(audioData);
-
-		idx = mapFreqToIndex(freq);
-	
-		//console.log(freq, audioData[idx]);
-
-		if (audioData[idx] > maxAmplitude) {
-			maxAmplitude = audioData[idx];
-			optimalFrequency = oscillator.frequency.value;
-		}
-
-	}
-	console.log("Optimal Freq: " + optimalFrequency);
-
-	oscillator.frequency.value = optimalFrequency;
-}
-
-function startSoundWave(isFirstTime) {
-	console.log("Freq");
-
+function startSoundWave() {
 	oscillator.connect(audioContext.destination);
 
-	if (isFirstTime) {
-		findOptimalFrequency();
-	}
-	
 	processAudioData();
 }
 
@@ -236,7 +198,8 @@ function initSoundWave() {
 
 		source.connect(analyser);
 		
-		startSoundWave(true);
+		startSoundWave();
+
 	}, function() { alert("Please allow Microphone Access")});
 }
 
@@ -248,7 +211,7 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 		initSoundWave();
 	} else if (request.message == "start") {
 		console.log("Start");
-		startSoundWave(false);
+		startSoundWave();
 	} else if (request.message == "stop") {
 		console.log("Stop");
 		stopSoundWave();
