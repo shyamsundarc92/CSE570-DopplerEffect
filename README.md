@@ -10,6 +10,8 @@ WordReplacer - Sample Chrome Extension developed for fun
 
 3) Once satisfied with the amount of detected change, start mapping gestures to bin movement
 
+4) One click all tabs enable
+
 ------------
 
 Tests run so far:
