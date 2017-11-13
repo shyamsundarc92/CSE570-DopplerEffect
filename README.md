@@ -12,6 +12,7 @@ WordReplacer - Sample Chrome Extension developed for fun
 
 4) One click all tabs enable
 
+5) Tab refresh/move detect and fix extension icons for all cases
 ------------
 
 Tests run so far:
