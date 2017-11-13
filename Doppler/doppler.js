@@ -63,9 +63,6 @@ function analyseInputData() {
     else {
         var left = getLeftBandwidth(audioData);
         var right = getRightBandwidth(audioData);
-        
-        //var diff = left - right;
-            //console.log(left, " : ", right, "diff: ", left - right);
 
         repeat = setTimeout(analyseInputData, 50);
         gestureHandler({"left" : left, "right" : right, "peakAmp" : audioData[convertFreqToIndex(oscillator.frequency.value)]});
