@@ -6,7 +6,7 @@ var prevDirection = 0;
 
 var accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
-var binDecisionThreshold = 5;
+var binDecisionThreshold = 8;
 
 var binReadRemaining = binDecisionThreshold;
 
@@ -16,7 +16,7 @@ function resetThresholds() {
 	/*
 	 * Reset values
 	 */
-	console.log("Resetting Thresholds");
+	//console.log("Resetting Thresholds");
    	accumDiff = 0;
    	accumAmp = 0;
    	binReadRemaining = binDecisionThreshold;
@@ -33,7 +33,7 @@ function identifyGesture(args) {
 		return;
 	}
 
-	console.log("Cool Down Done");
+	//console.log("Cool Down Done");
 
 	/*
 	 * Cool Down done - process the sample if the values exceed the minimum threshold
@@ -42,7 +42,7 @@ function identifyGesture(args) {
 
 	var dir = (diff < 0) ? -1 : ((diff > 0) ? 1 : 0);
 
-	if (diff < -1 || diff > 1) {
+	if (diff < -2 || diff > 2) {
 		/* 
 		 * Read continuous bins that meet these criteria and use their values only
 		 */

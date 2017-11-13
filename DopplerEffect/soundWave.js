@@ -167,7 +167,7 @@ function processAudioData() {
 		}
 	}
 
-	repeat = setTimeout(processAudioData, 10);
+	repeat = setTimeout(processAudioData, 30);
 
 	//console.log("Final: left: ", leftBoundary, "Right: ", rightBoundary);
 
@@ -206,7 +206,7 @@ function initSoundWave() {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-	console.log("Message Received");
+	//console.log("Message Received");
 
 	if (request.message == "Init") {
 		console.log("Init & Start");
