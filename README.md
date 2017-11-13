@@ -64,4 +64,4 @@ Diff is < 10 and Amplitude of peak is > 75
 Fast:
 Diff is > 10 but AMplitude of peak is same as above
 
-Tap: Left hand only wrist over left keyboard
+Tap: Left hand only palm over left keyboard
