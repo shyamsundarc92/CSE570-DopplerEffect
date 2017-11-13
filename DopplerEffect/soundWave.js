@@ -14,7 +14,7 @@ oscillator.start();
  */
 var analyser = audioContext.createAnalyser();
 
-var repeat = 0;
+var repeat = 0, currentTabId = -1;
 
 /*
  * Map given Frequency to FFT Bin Index
@@ -52,7 +52,7 @@ function findPeakLimits(audioData, direction, peakTone) {
 	 * No doppler shift observed in peak tone frequency - return
 	 */
 	if (audioData[peakToneBin] == 0) {
-		console.log("No change");
+		//console.log("No change");
 		return boundary;
 	}
 
@@ -132,15 +132,15 @@ function processAudioData() {
 	/*
 	 * Find the limits of the pilot tone peak
 	 */
-	console.log("Pilot Left: ");
+	//console.log("Pilot Left: ");
 	
 	var leftBoundary = findPeakLimits(audioData, -1, oscillator.frequency.value);
 	
-	console.log("Pilot Right: ");
+	//console.log("Pilot Right: ");
 	
 	var rightBoundary = findPeakLimits(audioData, 1, oscillator.frequency.value); 
 	
-	console.log("Bound: ", leftBoundary + ":" + rightBoundary);
+	//console.log("Bound: ", leftBoundary + ":" + rightBoundary);
 
 	/*
 	 * Do a scan for the second peak beyond of the pilot tone peak
@@ -150,7 +150,7 @@ function processAudioData() {
 	 * Do this scan only if there was a pilot tone peak in the first place
 	 */	
 	if (leftBoundary != 0) {
-		console.log("Secondary Left: ");
+		//console.log("Secondary Left: ");
 		var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary);
 		
 		if (secondaryLeftBoundary != -1 && secondaryLeftBoundary < leftBoundary) {
@@ -159,7 +159,7 @@ function processAudioData() {
 	}
 	
 	if (rightBoundary != 0) {
-		console.log("Secondary Right: ");
+		//console.log("Secondary Right: ");
 		var secondaryRightBoundary = checkForSecondaryPeak(audioData, 1, rightBoundary);
 		
 		if (secondaryRightBoundary != -1 && secondaryRightBoundary > rightBoundary) {
@@ -169,9 +169,11 @@ function processAudioData() {
 
 	repeat = setTimeout(processAudioData, 10);
 
-	console.log("Final: left: ", leftBoundary, "Right: ", rightBoundary);
+	//console.log("Final: left: ", leftBoundary, "Right: ", rightBoundary);
 
-	return {"left" : leftBoundary, "right" : rightBoundary};
+	var args = {"left" : leftBoundary, "right" : rightBoundary, "peakAmp" : audioData[mapFreqToIndex(oscillator.frequency.value)]};
+
+	chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "SampledResult", "args" : args});
 }
 
 function startSoundWave() {
@@ -206,13 +208,14 @@ function initSoundWave() {
 chrome.runtime.onMessage.addListener(function(request, sender) {
 	console.log("Message Received");
 
-	if (request.message == "init") {
+	if (request.message == "Init") {
 		console.log("Init & Start");
 		initSoundWave();
-	} else if (request.message == "start") {
+		currentTabId = request.tab;
+	} else if (request.message == "Start") {
 		console.log("Start");
 		startSoundWave();
-	} else if (request.message == "stop") {
+	} else if (request.message == "Stop") {
 		console.log("Stop");
 		stopSoundWave();
 	}
