@@ -57,10 +57,11 @@ function identifyGesture(args) {
 		 prevDirection = dir;
 
 		 if (binReadRemaining == 0) {
+			var avgDiff = accumDiff / binDecisionThreshold;
+			var avgAmp = accumDiff / binDecisionThreshold;
 
-			if (dirChanges == 1) {
-				var avgDiff = accumDiff / binDecisionThreshold;
-				var avgAmp = accumDiff / binDecisionThreshold;
+			//console.log("dir: ", dir, "diff: ", avgDiff, "amp: ", avgAmp);
+			if (dirChanges == 1) {	
 				
 				if (dir == -1) {
 					/*

@@ -58,13 +58,13 @@ function analyseInputData() {
     analyser.getByteFrequencyData(audioData);
 
     if (audioData[convertFreqToIndex(oscillator.frequency.value)] == 0) {
-        setTimeout(analyseInputData, 10);
+        setTimeout(analyseInputData, 40);
     }
     else {
         var left = getLeftBandwidth(audioData);
         var right = getRightBandwidth(audioData);
 
-        repeat = setTimeout(analyseInputData, 50);
+        repeat = setTimeout(analyseInputData, 40);
         gestureHandler({"left" : left, "right" : right, "peakAmp" : audioData[convertFreqToIndex(oscillator.frequency.value)]});
     }
 }

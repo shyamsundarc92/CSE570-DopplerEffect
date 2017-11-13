@@ -167,7 +167,7 @@ function processAudioData() {
 		}
 	}
 
-	repeat = setTimeout(processAudioData, 30);
+	repeat = setTimeout(processAudioData, 10);
 
 	//console.log("Final: left: ", leftBoundary, "Right: ", rightBoundary);
 
