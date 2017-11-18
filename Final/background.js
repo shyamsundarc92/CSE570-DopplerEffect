@@ -44,9 +44,13 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 	/*
 	 * Receive and forward message between content scripts
 	 */
-	console.log("Forwarding message", request.message);
+	console.log("Recvd message", request.message);
 
 	if (request.message == "SampledResult") {
 		chrome.tabs.sendMessage(request.tab, {"message" : request.message, "args" : request.args});
+	} else if (request.message == "Error") {
+		delete tabsInUse[request.tab];
+		chrome.browserAction.setIcon({path: "off", tabId:request.tab});
 	}
+
 });

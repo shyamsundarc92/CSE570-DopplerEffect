@@ -187,7 +187,11 @@ function initSoundWave() {
 		
 		startSoundWave();
 
-	}, function() { alert("Please allow Microphone Access")});
+	}, function() {
+		alert("ERROR - Need Microphone access for extension to work");
+		
+		chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Error"});
+	});
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
