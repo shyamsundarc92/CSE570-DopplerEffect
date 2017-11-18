@@ -4,15 +4,18 @@ WordReplacer - Sample Chrome Extension developed for fun
 
 # ToDO tasks in Doppler Effect
 
-1) Debug Secondary Scan
+1) Debug Secondary Scan - Code seems correct so just verifying operation should be enough
 
-2) Verify various params (Tuning Constant, thresholds for boundaries etc.) and verify robustness of change in cases when there is movement against cases where there is no movement
+2+3) Verify various params (Tuning Constant, thresholds for boundaries etc.) and verify robustness of change in cases when there is movement against cases where there is no movement. Once satisfied with the amount of detected change, start mapping gestures to bin movement - Mapped Gestures - Need to tune thresholds on final code
 
-3) Once satisfied with the amount of detected change, start mapping gestures to bin movement
+4) One click all tabs enable - MAY NOT NEED THIS (Per tab enable/disable provides flexibility)
 
-4) One click all tabs enable
+5) Tab refresh/move detect and fix extension icons for all cases (Added onUpdate listener but it is messing up the state machine - DEBUG)
 
-5) Tab refresh/move detect and fix extension icons for all cases
+6) Gesture Mapper - we don't consider dir = 0 (maybe check and add it if required).
+
+7) Finally, map gestures to browser actions
+
 ------------
 
 Tests run so far:
