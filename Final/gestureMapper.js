@@ -112,7 +112,6 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
 	if (request.message == "SampledResult") {
 		identifyGesture(request.args);
 		currentTabId = request.tab;
-		chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap"});
 	} else if (request.message == "Start") {
 		coolDownRemaining = coolDownDefault;
 		dirChanges = 0;

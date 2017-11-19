@@ -10,13 +10,15 @@ function movementVertical(args, type, fullScreenElement) {
 		window.scrollBy(0, speed);
 	
 	} else {
+		var media = fullScreenElement.getElementsByTagName('video')[0];
+		
 		var increase = Math.abs(avgDiff) / 20.0;
 
 		if (type == "Down") {
 			increase *= -1;
 		}
 
-		fullScreenElement.volume += increase;
+		media.volume += increase;
 	}
 }
 
@@ -27,33 +29,33 @@ function movementHorizontal(args, type, fullScreenElement) {
 		 * same type and trigger some action as a result
 		 */
 	} else {
+		var media = fullScreenElement.getElementsByTagName('video')[0];
+		
 		var speed = Maths.abs(avgDiff) * 5;
 
 		if (type == "Left") {
 			speed *= -1;
 		}
 
-		fullScreenElement.currentTime += speed;
+		media.currentTime += speed;
 	}
 }
 
 function movementTap(args, type, fullScreenElement) {
-	console.log("Tapped", fullScreenElement);
 
 	if (fullScreenElement != undefined) {
 		
-		var media = document.getElementsByTagName('video');
+		var media = fullScreenElement.getElementsByTagName('video')[0];
 
 		console.log(media);
 
 		var isPaused = media.paused;
-		/*
+		
 		if (isPaused) {
-			fullScreenElement.play();
+			media.play();
 		} else {
-			fullScreenElement.pause();
-		}*/
-		console.log("IsPaused = ", isPaused);
+			media.pause();
+		}
 	}
 }
 
