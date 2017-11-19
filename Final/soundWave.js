@@ -197,8 +197,6 @@ function initSoundWave() {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-	//console.log("Message Received");
-
 	if (request.message == "Init") {
 		console.log("Init & Start");
 		initSoundWave();

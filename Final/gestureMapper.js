@@ -65,17 +65,37 @@ function identifyGesture(args) {
 		var avgAmp = accumAmp / binDecisionThreshold;
 
 		console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
-		if ((dirChanges == 2 && avgDiff >= 6 && avgAmp >= 95 && avgAmp <= 104) || dirChanges > 2) {
-			/* Double Tap */
+		var args = { "avgDiff" : avgDiff };
+		if ((dirChanges == 2 && avgDiff >= 6 && avgAmp >= 92 && avgAmp <= 104) || dirChanges > 2) {
+			/* Tap */
 			console.log("Tap");
+			chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap"});
 		} else if (dirChanges <= 2) {
-			//console.log("prev dirr: ", prevDirection);
-			/* Movement in a specific direction */
+			/* Right or Down Movement */
 			if (prevDirection == -1) {
-				console.log("Right/Down Movement");
+				if (avgAmp > 115) {
+					/* Right */
+					console.log("right");
+					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Right", "args" : args});
+				}
+				else {
+					/* Down */
+					console.log("down");
+					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Down", "args" : args});
+				}
 			}
+			/* Left or Up Movement */
 			else if (prevDirection == 1) {
-				console.log("Left/Up Movement");
+				if (avgAmp > 115) {
+					/* Left */
+					console.log("left");
+					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Left", "args" : args});
+				}
+				else {
+					/* Up */
+					console.log("up");
+					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Up", "args" : args});
+				}
 			}
 		}
 
@@ -95,5 +115,7 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
 		dirChanges = 0;
 		prevDirection = 0;
 		resetThresholds();
+	} else if (request.message == "Tap") {
+		console.log("request.args");
 	}
 });
