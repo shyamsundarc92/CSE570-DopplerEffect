@@ -47,8 +47,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	console.log("Recvd message", request.message);
 
 	if (request.message == "SampledResult" || request.message == "Up" ||
-		request.message == " Down" || request.message == "Left" ||
-		request.message === "Right" || request.message == "Tap") {
+		request.message == "Down" || request.message == "Left" ||
+		request.message == "Right" || request.message == "Tap") {
 		if (!("args" in request)) {
 			request["args"] = undefined;
 		}

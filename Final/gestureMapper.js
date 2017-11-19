@@ -1,4 +1,4 @@
-var coolDownDefault = 8, coolDownRemaining = coolDownDefault;
+var coolDownDefault = 15, coolDownRemaining = coolDownDefault;
 
 var prevDirection = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
@@ -47,7 +47,7 @@ function identifyGesture(args) {
 		return;
 	}
 	
-	if (dir != prevDirection) {
+	if (dir != prevDirection && dir != 0) {
 		prevDirection = dir;
 		dirChanges++;
 		resetThresholds();
@@ -71,11 +71,11 @@ function identifyGesture(args) {
 		if ((dirChanges == 2 && avgDiff >= 6 && avgAmp >= 92 && avgAmp <= 104) || dirChanges > 2) {
 			/* Tap */
 			console.log("Tap");
-			chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap"});
+			chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap", "args": args});
 		} else if (dirChanges <= 2) {
 			/* Right or Down Movement */
 			if (prevDirection == -1) {
-				if (avgAmp > 115) {
+				if (avgAmp > 120) {
 					/* Right */
 					console.log("right");
 					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Right", "args" : args});
@@ -88,7 +88,7 @@ function identifyGesture(args) {
 			}
 			/* Left or Up Movement */
 			else if (prevDirection == 1) {
-				if (avgAmp > 115) {
+				if (avgAmp > 120) {
 					/* Left */
 					console.log("left");
 					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Left", "args" : args});
@@ -117,7 +117,5 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
 		dirChanges = 0;
 		prevDirection = 0;
 		resetThresholds();
-	} else if (request.message == "Tap") {
-		console.log("request.args");
 	}
 });

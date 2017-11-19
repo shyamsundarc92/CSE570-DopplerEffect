@@ -1,7 +1,7 @@
 function movementVertical(args, type, fullScreenElement) {
 
 	if (fullScreenElement == undefined) {
-		var speed = Math.abs(avgDiff) * 100;
+		var speed = Math.abs(args.avgDiff) * 100;
 
 		if (type == "Up") {
 			speed *= -1;
@@ -12,13 +12,18 @@ function movementVertical(args, type, fullScreenElement) {
 	} else {
 		var media = fullScreenElement.getElementsByTagName('video')[0];
 		
-		var increase = Math.abs(avgDiff) / 20.0;
+		var increase = Math.abs(args.avgDiff) / 30.0;
 
 		if (type == "Down") {
 			increase *= -1;
 		}
 
-		media.volume += increase;
+		if (media.volume + increase > 1.0)
+			media.volume = 1.0;
+		else if (media.volume + increase < 0.0)
+			media.volume = 0.0;
+		else
+			media.volume += increase;
 	}
 }
 
@@ -30,8 +35,9 @@ function movementHorizontal(args, type, fullScreenElement) {
 		 */
 	} else {
 		var media = fullScreenElement.getElementsByTagName('video')[0];
-		
-		var speed = Maths.abs(avgDiff) * 5;
+
+		var speed = Math.abs(args.avgDiff) * 5;
+
 
 		if (type == "Left") {
 			speed *= -1;
@@ -47,14 +53,18 @@ function movementTap(args, type, fullScreenElement) {
 		
 		var media = fullScreenElement.getElementsByTagName('video')[0];
 
-		console.log(media);
-
 		var isPaused = media.paused;
 		
 		if (isPaused) {
 			media.play();
 		} else {
 			media.pause();
+		}
+	} else {
+		if (args.avgDiff > 0) {
+			movementVertical(args, "Up", fullScreenElement);
+		} else {
+			movementVertical(args, "Down", fullScreenElement);
 		}
 	}
 }
