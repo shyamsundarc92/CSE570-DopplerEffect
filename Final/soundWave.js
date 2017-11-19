@@ -119,19 +119,21 @@ function processAudioData() {
 		 * and if a second peak is found, find its limits
 		 * and change boundaries found earlier
 		 */	
-		var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary);
+		/*var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary);
 
 		if (secondaryLeftBoundary != -1 && secondaryLeftBoundary < leftBoundary) {
-			console.log("Found Secondary Left");
+			if (leftBoundary - secondaryLeftBoundary > 3)
+			console.log("Found Secondary Left", secondaryLeftBoundary);
 			leftBoundary = secondaryLeftBoundary;
 		}
 
 		var secondaryRightBoundary = checkForSecondaryPeak(audioData, 1, rightBoundary);
 
 		if (secondaryRightBoundary != -1 && secondaryRightBoundary > rightBoundary) {
-			console.log("Found Secondary Right");
+			if (secondaryRightBoundary - rightBoundary > 3)
+			console.log("Found Secondary Right", secondaryRightBoundary);
 			rightBoundary = secondaryRightBoundary;
-		}
+		}*/
 	}
 	
 	repeat = setTimeout(processAudioData, 40);
@@ -195,7 +197,7 @@ function initSoundWave() {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-	console.log("Message Received");
+	//console.log("Message Received");
 
 	if (request.message == "Init") {
 		console.log("Init & Start");
