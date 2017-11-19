@@ -40,17 +40,21 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 */
 
-chrome.runtime.onMessage.addListener(function(request, sender) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	/*
-	 * Receive and forward message between content scripts
+	 * Receive and service/forward messages from content scripts
 	 */
 	console.log("Recvd message", request.message);
 
-	if (request.message == "SampledResult") {
-		chrome.tabs.sendMessage(request.tab, {"message" : request.message, "args" : request.args});
+	if (request.message == "SampledResult" || request.message == "Up" ||
+		request.message == " Down" || request.message == "Left" ||
+		request.message === "Right" || request.message == "Tap") {
+		if (!("args" in request)) {
+			request["args"] = undefined;
+		}
+		chrome.tabs.sendMessage(request.tab, request);
 	} else if (request.message == "Error") {
 		delete tabsInUse[request.tab];
 		chrome.browserAction.setIcon({path: "off", tabId:request.tab});
 	}
-
 });

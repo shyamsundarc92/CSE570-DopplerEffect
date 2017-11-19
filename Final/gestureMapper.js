@@ -4,6 +4,8 @@ var prevDirection = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
 var binDecisionThreshold = 10, binReadRemaining = binDecisionThreshold;
 
+var currentTabId = -1;
+
 setTimeout(clear, 2000);
 
 function clear () {
@@ -106,10 +108,11 @@ function identifyGesture(args) {
 	}
 }
 
-
 chrome.runtime.onMessage.addListener(function (request, sender) {
 	if (request.message == "SampledResult") {
 		identifyGesture(request.args);
+		currentTabId = request.tab;
+		chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap"});
 	} else if (request.message == "Start") {
 		coolDownRemaining = coolDownDefault;
 		dirChanges = 0;
