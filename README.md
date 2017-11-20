@@ -14,7 +14,7 @@ WordReplacer - Sample Chrome Extension developed for fun
 
 6) Gesture Mapper - we don't consider dir = 0 (maybe check and add it if required). - ADDED DIR = 0
 
-7) Finally, map gestures to browser actions - DONE. Need to find action for repeated horziontal non-video movements
+7) Finally, map gestures to browser actions - DONE. Need to find action for repeated horziontal non-video movements - Ideal is to move between tabs.
 
 ------------
 
