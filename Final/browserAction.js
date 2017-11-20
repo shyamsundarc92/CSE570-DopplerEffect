@@ -1,3 +1,7 @@
+var gestureHistory = [];
+var historySize = 3;
+var currentIndex = 0;
+
 function movementVertical(args, type, fullScreenElement) {
 
 	if (fullScreenElement == undefined) {
@@ -10,7 +14,8 @@ function movementVertical(args, type, fullScreenElement) {
 		window.scrollBy(0, speed);
 	
 	} else {
-		var media = (fullScreenElement.getElementsByTagName('video') || fullScreenElement.getElementsByTagName('audio'))[0];
+		var media = (fullScreenElement.getElementsByTagName('video') ||
+			fullScreenElement.getElementsByTagName('audio'))[0];
 
 		if (media == undefined) {
 			return;
@@ -33,13 +38,41 @@ function movementVertical(args, type, fullScreenElement) {
 }
 
 function movementHorizontal(args, type, fullScreenElement) {
+	
 	if (fullScreenElement == undefined) {
-		/*
-		 * For now, nothing. Will add algorithm to detect multple gestures of the
-		 * same type and trigger some action as a result
-		 */
+		if (gestureHistory.length != historySize) {
+			return;
+		}
+
+		var previousGesture = gestureHistory[(current + historySize - 1) % historySize];
+		var beforePreviousGesture = gestureHistory[(current + historySize - 2) % historySize];
+
+		if (type == gestureHistory[currentIndex] &&
+			type == previousGesture && type == beforePreviousGesture) {
+			if (gestureType == "Left") {
+				/*
+				 * 3 Successive Lefts
+				 */
+			} else {
+				/*
+				 * 3 Successive Rights
+				 */
+			}
+		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
+			"Right" == previousGesture && type == beforePreviousGesture) {
+				/*
+				 * L R L action
+				 */
+		} else if (type == "Right" && type == gestureHistory[currentIndex] &&
+			"Left" == previousGesture && type == beforePreviousGesture) {
+				/*
+				 * R L R action
+				 */
+		}
+				
 	} else {
-		var media = (fullScreenElement.getElementsByTagName('video') || fullScreenElement.getElementsByTagName('audio'))[0];
+		var media = (fullScreenElement.getElementsByTagName('video') ||
+			fullScreenElement.getElementsByTagName('audio'))[0];
 
 		if (media == undefined) {
 			return;
@@ -60,7 +93,8 @@ function movementTap(args, type, fullScreenElement) {
 
 	if (fullScreenElement != undefined) {
 		
-		var media = (fullScreenElement.getElementsByTagName('video') || fullScreenElement.getElementsByTagName('audio'))[0];
+		var media = (fullScreenElement.getElementsByTagName('video') ||
+			fullScreenElement.getElementsByTagName('audio'))[0];
 
 		if (media == undefined) {
 			return;
@@ -86,7 +120,21 @@ function checkFullScreen(args, type, callback) {
 
 	var fullScreenElement = (document.fullscreenElement || document.webkitFullscreenElement);
 
+	gestureHistory[currentIndex] = type;
+
 	callback(args, type, fullScreenElement);
+	
+	currentIndex = (currentIndex + 1) % historySize;
+
+	/*
+	 * Full Screen Mode - Reset gesture history to avoid incorrect
+	 * interpretation if the current tab exits full screen mode
+	 */
+	if (fullScreenElement != undefined) {
+		currentIndex = 0;
+		gestureHistory = [];
+	}
+		
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender) {
