@@ -11,20 +11,25 @@ var state = {
  */
 var tabsInUse = {}
 
-chrome.browserAction.onClicked.addListener(function (tab) {
-	if (tabsInUse[tab.id] == undefined) {
-		chrome.browserAction.setIcon({path: "on", tabId:tab.id});
-		chrome.tabs.sendMessage(tab.id, {"tab" : tab.id, "message": "Init"});
-		tabsInUse[tab.id] = state.RUNNING;
-	} else if (tabsInUse[tab.id] == state.STOPPED) {
-		chrome.browserAction.setIcon({path: "on", tabId:tab.id});
-		chrome.tabs.sendMessage(tab.id, {"tab" : tab.id, "message": "Start"});
-		tabsInUse[tab.id] = state.RUNNING;
+function extensionAction(tabID) {
+	if (tabsInUse[tabID] == undefined) {
+		chrome.browserAction.setIcon({path: "on", tabId:tabID});
+		chrome.tabs.sendMessage(tabID, {"tab" : tabID, "message": "Init"});
+		tabsInUse[tabID] = state.RUNNING;
+	} else if (tabsInUse[tabID] == state.STOPPED) {
+		chrome.browserAction.setIcon({path: "on", tabId:tabID});
+		chrome.tabs.sendMessage(tabID, {"tab" : tabID, "message": "Start"});
+		tabsInUse[tabID] = state.RUNNING;
 	} else {
-		chrome.browserAction.setIcon({path: "off", tabId:tab.id});
-		chrome.tabs.sendMessage(tab.id, {"tab" : tab.id, "message": "Stop"});
-		tabsInUse[tab.id] = state.STOPPED;
+		chrome.browserAction.setIcon({path: "off", tabId:tabID});
+		chrome.tabs.sendMessage(tabID, {"tab" : tabID, "message": "Stop"});
+		tabsInUse[tabID] = state.STOPPED;
 	}
+
+}
+
+chrome.browserAction.onClicked.addListener(function (tab) {
+	extensionAction(tab.id);
 });
 
 chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
@@ -60,5 +65,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	} else if (request.message == "Error") {
 		delete tabsInUse[request.tab];
 		chrome.browserAction.setIcon({path: "off", tabId:request.tab});
+	} else if (request.message == "EnableSoundWave") {
+		delete tabsInUse[request.tab];
+		extensionAction(request.tab.id);
 	}
 });

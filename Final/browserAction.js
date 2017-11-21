@@ -57,35 +57,38 @@ function movementHorizontal(args, type, fullScreenElement) {
 
 		if (type == gestureHistory[currentIndex] &&
 			type == previousGesture && type == beforePreviousGesture) {
+			var currentTabIdx = findCurrentTabIdx();
+			var newTabIdx = undefined;
+
 			if (gestureType == "Left") {
 				/*
 				 * 3 Successive Lefts
 				 */
-				 var currentTabIdx = findCurrentTabIdx();
+				 newTabIdx = (currentTabIdx + window.tabs.length - 1) % window.tabs.length;
 
-				 var previousTabIdx = (currentTabIdx + window.tabs.length - 1) % window.tabs.length;
-
-				 // Send message to enable SoundWave on new Tab
-				 chrome.tabs.update(previousTabIdx);
 			} else {
 				/*
 				 * 3 Successive Rights
 				 */
-				 var currentTabIdx = findCurrentTabIdx();
-
-				 var nextTabIdx = (currentTabIdx + window.tabs.length + 1) % window.tabs.length;
-
-				 // Send message to enable SoundWave on new Tab
-				 chrome.tabs.update(nextTabIdx);
+				 newTabIdx = (currentTabIdx + window.tabs.length + 1) % window.tabs.length;
 			}
+			
+			// Send message to enable SoundWave on new Tab
+			chrome.runtime.sendMessage({"tab" : window.tabs[newTabIndex].id,
+				"message": "EnableSoundWave"});
+
+			chrome.tabs.update(newTabIdx);
+
 		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
 			"Right" == previousGesture && type == beforePreviousGesture) {
 				/*
 				 * L R L action - Create new Tab
 				 */
-				 chrome.tabs.create();
-
-				 // Send message to enable SoundWave on new Tab
+				 chrome.tabs.create(function (newTab) {
+				 	// Send message to enable SoundWave on new Tab
+					chrome.runtime.sendMessage({"tab" : newTab.id,
+						"message": "EnableSoundWave"});	
+				 });
 
 		} else if (type == "Right" && type == gestureHistory[currentIndex] &&
 			"Left" == previousGesture && type == beforePreviousGesture) {
@@ -100,7 +103,9 @@ function movementHorizontal(args, type, fullScreenElement) {
 				 * R L L action - Reopen last closed Tab
 				 */
 				 chrome.tabs.restore(function (restoredSession) {
-				 	// Send message to enable SoundWave on restored tab - restoredSession.tab.id
+				 	// Send message to enable SoundWave on restored tab
+					chrome.runtime.sendMessage({"tab" : restoredSession.tab.id,
+						"message": "EnableSoundWave"});
 				}
 		}
 		
