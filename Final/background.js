@@ -36,21 +36,18 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
 	delete tabsInUse[tabId];
 });
 
-/*
- * On tab update - restore to correct state
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 	if ((tabsInUse[tab.id] == undefined) || (tabsInUse[tab.id] == state.STOPPED)) {
 		chrome.browserAction.setIcon({path: "off", tabId:tab.id});
 		delete tabsInUse[tab.id];
-		console.log("Reload");
 	} else if (tabsInUse[tab.id] == state.RUNNING) {
-		console.log("Reload - RUnning");
-		extensionAction(tab.id);
-		delete tabsInUse[tab.id];
-		extensionAction(tab.id);
+		chrome.browserAction.setIcon({path: "on", tabId:tab.id});
+		if (changeInfo.status == "complete") {
+			console.log("Send Updated");
+			chrome.tabs.sendMessage(tab.id, {"tab" : tab.id, "message": "Updated"});
+		}
 	}	
 });
-*/
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	/*

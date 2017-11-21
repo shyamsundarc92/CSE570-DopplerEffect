@@ -151,7 +151,9 @@ function startSoundWave() {
 }
 
 function stopSoundWave() {
-	oscillator.disconnect(audioContext.destination);
+	if (oscillator != undefined) {
+		oscillator.disconnect(audioContext.destination);
+	}
 
 	clearInterval(repeat);
 }
@@ -197,8 +199,12 @@ function initSoundWave() {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
-	if (request.message == "Init") {
-		console.log("Init & Start");
+	if (request.message == "Init" || request.message == "Updated") {
+		if (oscillator != undefined) {
+			return;
+		}
+
+		console.log(request.message, " & Start");
 		initSoundWave();
 		currentTabId = request.tab;
 	} else if (request.message == "Start") {
