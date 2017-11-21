@@ -66,10 +66,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		delete tabsInUse[request.tab];
 		chrome.browserAction.setIcon({path: "off", tabId:request.tab});
 	} else if (request.message == "EnableSoundWave") {
-		if (tabsInUse[request.tab] == state.RUNNING) {
+		if (tabsInUse[request.tab] != state.RUNNING) {
 			extensionAction(request.tab);
 		}
-		delete tabsInUse[request.tab];
-		extensionAction(request.tab.id);
 	}
 });
