@@ -106,7 +106,7 @@ function movementHorizontal(args, type, fullScreenElement) {
 				 	// Send message to enable SoundWave on restored tab
 					chrome.runtime.sendMessage({"tab" : restoredSession.tab.id,
 						"message": "EnableSoundWave"});
-				}
+				});
 		}
 		
 		gestureHistory = []
