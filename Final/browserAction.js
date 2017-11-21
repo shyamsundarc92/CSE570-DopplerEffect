@@ -37,6 +37,14 @@ function movementVertical(args, type, fullScreenElement) {
 	}
 }
 
+function findCurrentTabIdx() {
+	for (var i = 0; i < window.tab.length; i++) {
+		if (window.tab[i].active) {
+			return i;
+		}
+	}
+}
+
 function movementHorizontal(args, type, fullScreenElement) {
 	
 	if (fullScreenElement == undefined) {
@@ -53,23 +61,51 @@ function movementHorizontal(args, type, fullScreenElement) {
 				/*
 				 * 3 Successive Lefts
 				 */
+				 var currentTabIdx = findCurrentTabIdx();
+
+				 var previousTabIdx = (currentTabIdx + window.tabs.length - 1) % window.tabs.length;
+
+				 // Send message to enable SoundWave on new Tab
+				 chrome.tabs.update(previousTabIdx);
 			} else {
 				/*
 				 * 3 Successive Rights
 				 */
+				 var currentTabIdx = findCurrentTabIdx();
+
+				 var nextTabIdx = (currentTabIdx + window.tabs.length + 1) % window.tabs.length;
+
+				 // Send message to enable SoundWave on new Tab
+				 chrome.tabs.update(nextTabIdx);
 			}
 		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
 			"Right" == previousGesture && type == beforePreviousGesture) {
 				/*
-				 * L R L action
+				 * L R L action - Create new Tab
 				 */
+				 chrome.tabs.create();
+
+				 // Send message to enable SoundWave on new Tab
+
 		} else if (type == "Right" && type == gestureHistory[currentIndex] &&
 			"Left" == previousGesture && type == beforePreviousGesture) {
 				/*
-				 * R L R action
+				 * R L R action - Close current Tab
 				 */
+				 chrome.tabs.remove(window.tabs[currentTabIdx()]);
+
+		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
+			"Left" == previousGesture && type == beforePreviousGesture) {
+				/*
+				 * R L L action - Reopen last closed Tab
+				 */
+				 chrome.tabs.restore(function (restoredSession) {
+				 	// Send message to enable SoundWave on restored tab - restoredSession.tab.id
+				}
 		}
-				
+		
+		gestureHistory = []
+		currentIndex = 0;
 	} else {
 		var media = (fullScreenElement.getElementsByTagName('video') ||
 			fullScreenElement.getElementsByTagName('audio'))[0];

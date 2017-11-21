@@ -11,7 +11,7 @@ var state = {
  */
 var tabsInUse = {}
 
-chrome.browserAction.onClicked.addListener(function(tab) {
+chrome.browserAction.onClicked.addListener(function (tab) {
 	if (tabsInUse[tab.id] == undefined) {
 		chrome.browserAction.setIcon({path: "on", tabId:tab.id});
 		chrome.tabs.sendMessage(tab.id, {"tab" : tab.id, "message": "Init"});
@@ -25,6 +25,10 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 		chrome.tabs.sendMessage(tab.id, {"tab" : tab.id, "message": "Stop"});
 		tabsInUse[tab.id] = state.STOPPED;
 	}
+});
+
+chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
+	delete tabsInUse[tabId];
 });
 
 /*
