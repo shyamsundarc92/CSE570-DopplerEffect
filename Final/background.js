@@ -52,6 +52,58 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 */
 
+function performAction(request) {
+	var length, newTabIdx;
+	chrome.tabs.getAllInWindow(function (tabs) {
+		length = tabs.length;
+		if (request.args.action == "MoveToLeftTab" || request.args.action == "MoveToLeftTab") {
+
+			if (request.args.action == "MoveToLeftTab") {
+				newTabIdx = (request.tabIndex + length - 1) % length;
+			} else if (request.args.action == "MoveToRightTab") {
+				newTabIdx = (request.tabIndex + length + 1) % length;
+			}
+			chrome.tabs.update(tabs[newTabIdx].id, {selected: true});
+			delete tabsInUse[tabs[newTabIdx].id];
+			extensionAction(tabs[newTabIdx].id);
+
+		} else if (request.args.action == "CreateNewTab") {
+			chrome.tabs.create({}, function (tab) {
+				extensionAction(tab.id);
+			});
+
+		} else if (request.args.action == "CloseCurrentTab") {
+			chrome.tabs.remove(request.tabId, function() {});
+
+			/* Enabling SoundWave for current active tab after removing the previous active tab */
+			/*chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
+				delete tabsInUse[tabs[0].id];
+				extensionAction(tabs[0].id);
+				console.log(tabs);
+			});*/
+
+			setTimeout( function() {
+				chrome.tabs.getSelected(null, function (tab) {
+					var activeTabId = tab.id;
+					//console.log(tab, request.tabId, activeTabId);
+					delete tabsInUse[activeTabId];
+					extensionAction(activeTabId);
+				});
+			}, 1000);
+
+		} else if (request.args.action == "ReopenClosedTab") {
+			chrome.sessions.restore(function (response) {
+				//console.log(response, response.tab.id);
+				delete tabsInUse[response.tab.id];
+				extensionAction(response.tab.id);
+			});
+
+		}
+
+	});
+
+}
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	/*
 	 * Receive and service/forward messages from content scripts
@@ -69,10 +121,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		delete tabsInUse[request.tab];
 		chrome.browserAction.setIcon({path: "off", tabId:request.tab});
 	} else if (request.message == "EnableSoundWave") {
-		if (tabsInUse[request.tab] == state.RUNNING) {
-			extensionAction(request.tab);
-		}
-		delete tabsInUse[request.tab];
-		extensionAction(request.tab.id);
+		chrome.tabs.getSelected(null, function (tab) {
+			var activeTabId = tab.id;
+			request["tabId"] = activeTabId;
+			request["tabIndex"] = tab.index;
+			performAction(request);
+		});
 	}
 });

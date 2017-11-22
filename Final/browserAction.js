@@ -37,80 +37,71 @@ function movementVertical(args, type, fullScreenElement) {
 	}
 }
 
-function findCurrentTabIdx() {
-	for (var i = 0; i < window.tab.length; i++) {
-		if (window.tab[i].active) {
-			return i;
-		}
-	}
-}
-
 function movementHorizontal(args, type, fullScreenElement) {
 	
 	if (fullScreenElement == undefined) {
 		if (gestureHistory.length != historySize) {
 			return;
 		}
-
-		var previousGesture = gestureHistory[(current + historySize - 1) % historySize];
-		var beforePreviousGesture = gestureHistory[(current + historySize - 2) % historySize];
+		console.log("his: ", gestureHistory);
+		var previousGesture = gestureHistory[(currentIndex + historySize - 1) % historySize];
+		var beforePreviousGesture = gestureHistory[(currentIndex + historySize - 2) % historySize];
 
 		if (type == gestureHistory[currentIndex] &&
 			type == previousGesture && type == beforePreviousGesture) {
-			var currentTabIdx = findCurrentTabIdx();
-			var newTabIdx = undefined;
+				if (type == "Left") {
+					/*
+					 * 3 Successive Lefts
+					 */
 
-			if (gestureType == "Left") {
-				/*
-				 * 3 Successive Lefts
-				 */
-				 newTabIdx = (currentTabIdx + window.tabs.length - 1) % window.tabs.length;
+					// Send message to enable SoundWave on Left Tab and perform the action
+					var args = { "action" : "MoveToLeftTab" };
+					chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+	
+				} else {
+					/*
+					 * 3 Successive Rights
+					 */
 
-			} else {
-				/*
-				 * 3 Successive Rights
-				 */
-				 newTabIdx = (currentTabIdx + window.tabs.length + 1) % window.tabs.length;
-			}
-			
-			// Send message to enable SoundWave on new Tab
-			chrome.runtime.sendMessage({"tab" : window.tabs[newTabIndex].id,
-				"message": "EnableSoundWave"});
-
-			chrome.tabs.update(newTabIdx);
+					// Send message to enable SoundWave on Right Tab and perform the action
+					var args = { "action" : "MoveToRightTab" };
+					chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+				}
 
 		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
 			"Right" == previousGesture && type == beforePreviousGesture) {
 				/*
 				 * L R L action - Create new Tab
 				 */
-				 chrome.tabs.create(function (newTab) {
-				 	// Send message to enable SoundWave on new Tab
-					chrome.runtime.sendMessage({"tab" : newTab.id,
-						"message": "EnableSoundWave"});	
-				 });
+				
+				// Send message to enable SoundWave on new Tab and perform the action
+				var args = { "action" : "CreateNewTab" };
+				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
 
 		} else if (type == "Right" && type == gestureHistory[currentIndex] &&
 			"Left" == previousGesture && type == beforePreviousGesture) {
 				/*
 				 * R L R action - Close current Tab
 				 */
-				 chrome.tabs.remove(window.tabs[currentTabIdx()]);
+
+				// Send message to enable SoundWave and perform the action
+				var args = { "action" : "CloseCurrentTab" };
+				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
 
 		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
-			"Left" == previousGesture && type == beforePreviousGesture) {
+			type == previousGesture && beforePreviousGesture == "Right") {
 				/*
 				 * R L L action - Reopen last closed Tab
 				 */
-				 chrome.tabs.restore(function (restoredSession) {
-				 	// Send message to enable SoundWave on restored tab
-					chrome.runtime.sendMessage({"tab" : restoredSession.tab.id,
-						"message": "EnableSoundWave"});
-				});
+
+				// Send message to perform the action and enable SoundWave on the previously closed tab
+				var args = { "action" : "ReopenClosedTab" };
+				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
 		}
 		
-		gestureHistory = []
-		currentIndex = 0;
+		gestureHistory = [];
+		currentIndex = -1;
+
 	} else {
 		var media = (fullScreenElement.getElementsByTagName('video') ||
 			fullScreenElement.getElementsByTagName('audio'))[0];
@@ -161,6 +152,7 @@ function checkFullScreen(args, type, callback) {
 
 	var fullScreenElement = (document.fullscreenElement || document.webkitFullscreenElement);
 
+	console.log(currentIndex);
 	gestureHistory[currentIndex] = type;
 
 	callback(args, type, fullScreenElement);
