@@ -10,11 +10,11 @@ WordReplacer - Sample Chrome Extension developed for fun
 
 4) One click all tabs enable - MAY NOT NEED THIS (Per tab enable/disable provides flexibility)
 
-5) Tab refresh/move detect and fix extension icons for all cases (Added onUpdate listener but it is messing up the state machine - DEBUG)
+5) Tab refresh/move detect and fix extension icons for all cases - DONE
 
 6) Gesture Mapper - we don't consider dir = 0 (maybe check and add it if required). - ADDED DIR = 0
 
-7) Finally, map gestures to browser actions - DONE. Need to find action for repeated horziontal non-video movements - Ideal is to move between tabs.
+7) Finally, map gestures to browser actions - DONE. Need to find action for repeated horziontal non-video movements - Ideal is to move between tabs. - Actions added 5. 3 more left.
 
 ------------
 
