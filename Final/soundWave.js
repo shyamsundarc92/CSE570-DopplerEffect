@@ -55,48 +55,6 @@ function findPeakLimits(audioData, direction, peakTone) {
 }
 
 /*
- * Scans for the presence of a second peak
- * beyond the limits of the pilot tone peak and if present, finds its limits
- */
-function checkForSecondaryPeak(audioData, direction, prevBoundary) {
-	var primaryToneBin = convertFreqToIndex(oscillator.frequency.value);
-	/*
-	 * Determined by experimentation
-	 */
-	var secondaryPeakThreshold = 0.015;
-
-	var boundary = prevBoundary + 1;
-	
-	var found = false;
-
-	while (true) {
-		idx = primaryToneBin + boundary * direction;
-
-		if ((direction == -1 && idx < 0) ||
-			(direction == 1 && idx >= analyser.frequencyBinCount)) {
-			break;
-		}
-
-		var ratio = audioData[idx] / audioData[primaryToneBin];
-		
-		if (ratio >= secondaryPeakThreshold) {
-			found = true;
-			break;
-		}
-
-		boundary++;
-	}
-
-	if (found) {
-		return findPeakLimits(audioData, direction,
-			convertIndexToFreq(primaryToneBin + boundary * direction));
-	}
-
-	return -1;
-}
-
-
-/*
  * Fetch and process data from the microphone
  */
 function processAudioData() {
@@ -113,27 +71,6 @@ function processAudioData() {
 		leftBoundary = findPeakLimits(audioData, -1, oscillator.frequency.value);
 
 		rightBoundary = findPeakLimits(audioData, 1, oscillator.frequency.value); 
-
-		/*
-		 * Do a scan for the second peak beyond of the pilot tone peak
-		 * and if a second peak is found, find its limits
-		 * and change boundaries found earlier
-		 */	
-		/*var secondaryLeftBoundary = checkForSecondaryPeak(audioData, -1, leftBoundary);
-
-		if (secondaryLeftBoundary != -1 && secondaryLeftBoundary < leftBoundary) {
-			if (leftBoundary - secondaryLeftBoundary > 3)
-			console.log("Found Secondary Left", secondaryLeftBoundary);
-			leftBoundary = secondaryLeftBoundary;
-		}
-
-		var secondaryRightBoundary = checkForSecondaryPeak(audioData, 1, rightBoundary);
-
-		if (secondaryRightBoundary != -1 && secondaryRightBoundary > rightBoundary) {
-			if (secondaryRightBoundary - rightBoundary > 3)
-			console.log("Found Secondary Right", secondaryRightBoundary);
-			rightBoundary = secondaryRightBoundary;
-		}*/
 	}
 	
 	repeat = setTimeout(processAudioData, 40);
