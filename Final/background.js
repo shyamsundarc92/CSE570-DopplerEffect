@@ -53,7 +53,7 @@ function performAction(request) {
 	var length, newTabIdx;
 	chrome.tabs.getAllInWindow(function (tabs) {
 		length = tabs.length;
-		if (request.args.action == "MoveToLeftTab" || request.args.action == "MoveToLeftTab") {
+		if (request.args.action == "MoveToLeftTab" || request.args.action == "MoveToRightTab") {
 
 			if (request.args.action == "MoveToLeftTab") {
 				newTabIdx = (request.tabIndex + length - 1) % length;
