@@ -61,14 +61,14 @@ function performAction(request) {
 				newTabIdx = (request.tabIndex + length + 1) % length;
 			}
 			
-			chrome.tabs.update(tabs[newTabIdx].id, {selected: true});
+			chrome.tabs.update(tabs[newTabIdx].id, {active: true});
 			
 			if (tabsInUse[tabs[newTabIdx].id] != state.RUNNING) {
 				extensionAction(tabs[newTabIdx].id);
 			}
 
 		} else if (request.args.action == "CreateNewTab") {
-			chrome.tabs.create({}, function (tab) {
+			chrome.tabs.create({active: true}, function (tab) {
 				if (tabsInUse[tab.id] != state.RUNNING) {
 					extensionAction(tab.id);
 				}
