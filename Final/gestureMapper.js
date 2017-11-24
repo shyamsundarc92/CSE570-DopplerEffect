@@ -6,14 +6,10 @@ var binDecisionThreshold = 8, binReadRemaining = binDecisionThreshold;
 
 var currentTabId = -1;
 
-setTimeout(clear, 2000);
-
-function clear () {
+function inactivityClear() {
 	resetThresholds();
 	dirChanges = 0;
 	prevDirection = 0;
-	//console.log("clear");
-	setTimeout( clear, 2500);
 }
 
 function resetThresholds() {
@@ -26,6 +22,12 @@ function resetThresholds() {
 }
 
 function identifyGesture(args) {
+	clearInterval(inactivityClearer);
+	/*
+	 * If there's no follow-up gesture within 2.5 seconds, reset state
+	 */
+	inactivityClearer = setTimeout(inactivityClear, 2500);
+
 	/*
 	 * If still in the cool down period, ignore samples coming in
 	 */

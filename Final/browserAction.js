@@ -2,12 +2,11 @@ var gestureHistory = [];
 var historySize = 3;
 var currentIndex = 0;
 
-setTimeout(clear, 8000);
+var inactivityClearer = setTimeout(inactivityClear, 8000);
 
-function clear () {
+function inactivityClear() {
 	gestureHistory = [];
 	currentIndex = 0;
-	setTimeout( clear, 8000);
 }
 
 function movementVertical(args, type, fullScreenElement) {
@@ -186,6 +185,12 @@ function movementTap(args, type, fullScreenElement) {
 function checkFullScreen(args, type, callback) {
 
 	var fullScreenElement = (document.fullscreenElement || document.webkitFullscreenElement);
+	
+	clearInterval(inactivityClearer);
+	/*
+	 * If there's no follow-up gesture within 2.5 seconds, reset state
+	 */
+	inactivityClearer = setTimeout(inactivityClear, 2500);
 
 	gestureHistory[currentIndex] = type;
 
@@ -200,6 +205,7 @@ function checkFullScreen(args, type, callback) {
 	if (fullScreenElement != undefined) {
 		currentIndex = 0;
 		gestureHistory = [];
+		clearInterval(inactivityClearer);
 	}
 		
 }
