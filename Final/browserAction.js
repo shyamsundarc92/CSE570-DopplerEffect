@@ -2,6 +2,14 @@ var gestureHistory = [];
 var historySize = 3;
 var currentIndex = 0;
 
+setTimeout(clear, 8000);
+
+function clear () {
+	gestureHistory = [];
+	currentIndex = 0;
+	setTimeout( clear, 8000);
+}
+
 function movementVertical(args, type, fullScreenElement) {
 
 	if (fullScreenElement == undefined) {
@@ -43,10 +51,9 @@ function movementHorizontal(args, type, fullScreenElement) {
 		if (gestureHistory.length != historySize) {
 			return;
 		}
-		console.log("his: ", gestureHistory);
 		var previousGesture = gestureHistory[(currentIndex + historySize - 1) % historySize];
 		var beforePreviousGesture = gestureHistory[(currentIndex + historySize - 2) % historySize];
-
+		console.log("his: ", gestureHistory, currentIndex, (currentIndex + historySize - 1) % historySize, (currentIndex + historySize - 2) % historySize);
 		if (type == gestureHistory[currentIndex] &&
 			type == previousGesture && type == beforePreviousGesture) {
 				if (type == "Left") {
@@ -97,6 +104,32 @@ function movementHorizontal(args, type, fullScreenElement) {
 				// Send message to perform the action and enable SoundWave on the previously closed tab
 				var args = { "action" : "ReopenClosedTab" };
 				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+		
+		} else if (type == "Right" && type == gestureHistory[currentIndex] &&
+			previousGesture == "Left" && beforePreviousGesture == "Left") {
+				/*
+				* L L R action - Detect primary language in current tab
+				*/
+
+				// Send message to perform the action
+				var args = { "action" : "DetectLanguage" };
+				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+		
+		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
+			previousGesture == "Right" && beforePreviousGesture == "Right") {
+				/*
+				* R R L action - Change white background color to gray
+				*/
+
+				document.body.style.backgroundColor = "gainsboro";
+		
+		}  else if (type == "Right" && type == gestureHistory[currentIndex] &&
+			previousGesture == type && beforePreviousGesture == "Left") {
+				/*
+				* L R R action - Change gray background color to white
+				*/
+
+				document.body.style.backgroundColor = "white";
 		}
 		
 		gestureHistory = [];
@@ -142,8 +175,10 @@ function movementTap(args, type, fullScreenElement) {
 	} else {
 		if (args.avgDiff > 0) {
 			movementVertical(args, "Up", fullScreenElement);
+			console.log("Up");
 		} else {
 			movementVertical(args, "Down", fullScreenElement);
+			console.log("Down");
 		}
 	}
 }
@@ -152,7 +187,6 @@ function checkFullScreen(args, type, callback) {
 
 	var fullScreenElement = (document.fullscreenElement || document.webkitFullscreenElement);
 
-	console.log(currentIndex);
 	gestureHistory[currentIndex] = type;
 
 	callback(args, type, fullScreenElement);

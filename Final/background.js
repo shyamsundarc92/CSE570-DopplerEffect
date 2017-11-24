@@ -68,7 +68,7 @@ function performAction(request) {
 			}
 
 		} else if (request.args.action == "CreateNewTab") {
-			chrome.tabs.create({active: true}, function (tab) {
+			chrome.tabs.create({active: true, url: "https://www.google.com/"}, function (tab) {
 				if (tabsInUse[tab.id] != state.RUNNING) {
 					extensionAction(tab.id);
 				}
@@ -78,12 +78,6 @@ function performAction(request) {
 			chrome.tabs.remove(request.tabId, function() {});
 
 			/* Enabling SoundWave for current active tab after removing the previous active tab */
-			/*chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
-				delete tabsInUse[tabs[0].id];
-				extensionAction(tabs[0].id);
-				console.log(tabs);
-			});*/
-
 			setTimeout( function() {
 				chrome.tabs.getSelected(null, function (tab) {
 					var activeTabId = tab.id;
@@ -102,6 +96,12 @@ function performAction(request) {
 				}
 			});
 
+		} else if (request.args.action == "DetectLanguage") {
+			chrome.tabs.detectLanguage(request.tabId, function (language) {
+				console.log(language);
+				window.alert("Language used in this page: " + language.toUpperCase());
+			});
+		
 		}
 
 	});

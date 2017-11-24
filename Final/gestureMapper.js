@@ -1,8 +1,8 @@
-var coolDownDefault = 15, coolDownRemaining = coolDownDefault;
+var coolDownDefault = 8, coolDownRemaining = coolDownDefault;
 
 var prevDirection = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
-var binDecisionThreshold = 10, binReadRemaining = binDecisionThreshold;
+var binDecisionThreshold = 8, binReadRemaining = binDecisionThreshold;
 
 var currentTabId = -1;
 
@@ -12,9 +12,10 @@ function clear () {
 	resetThresholds();
 	dirChanges = 0;
 	prevDirection = 0;
-	console.log("clear");
+	//console.log("clear");
 	setTimeout( clear, 2500);
 }
+
 function resetThresholds() {
 	/*
 	 * Reset values
@@ -42,7 +43,7 @@ function identifyGesture(args) {
 
 	var dir = (diff < 0) ? -1 : ((diff > 0) ? 1 : 0);
 
-	if ((diff > -2 && diff < 2)) {
+	if ((diff >= 0 && diff <= 1)) {
 		//console.log("Does not meet threshold ", args);
 		return;
 	}
@@ -68,35 +69,37 @@ function identifyGesture(args) {
 
 		console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
 		var args = { "avgDiff" : avgDiff };
-		if ((dirChanges == 2 && avgDiff >= 6 && avgAmp >= 92 && avgAmp <= 104) || dirChanges > 2) {
+		if ((dirChanges == 2 && avgDiff >= 12 && avgAmp < 90) || 
+			(dirChanges == 1 && avgDiff >= 12 && avgAmp < 90) ||
+			dirChanges > 2) {
 			/* Tap */
 			console.log("Tap");
 			chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap", "args": args});
 		} else if (dirChanges <= 2) {
 			/* Right or Down Movement */
 			if (prevDirection == -1) {
-				if (avgAmp > 120) {
+				if (avgAmp > 104) {
 					/* Right */
 					console.log("right");
-					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Right", "args" : args});
+					//chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Right", "args" : args});
 				}
 				else {
 					/* Down */
 					console.log("down");
-					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Down", "args" : args});
+					//chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Down", "args" : args});
 				}
 			}
 			/* Left or Up Movement */
 			else if (prevDirection == 1) {
-				if (avgAmp > 120) {
+				if (avgAmp > 104) {
 					/* Left */
 					console.log("left");
-					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Left", "args" : args});
+					///chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Left", "args" : args});
 				}
 				else {
 					/* Up */
 					console.log("up");
-					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Up", "args" : args});
+					//chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Up", "args" : args});
 				}
 			}
 		}
