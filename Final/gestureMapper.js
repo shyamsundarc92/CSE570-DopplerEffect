@@ -78,7 +78,7 @@ function identifyGesture(args) {
 		} else if (dirChanges <= 2) {
 			/* Right or Down Movement */
 			if (prevDirection == -1) {
-				if (avgAmp > 104) {
+				if (avgAmp > 108) {
 					/* Right */
 					console.log("right");
 					//chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Right", "args" : args});
@@ -91,7 +91,7 @@ function identifyGesture(args) {
 			}
 			/* Left or Up Movement */
 			else if (prevDirection == 1) {
-				if (avgAmp > 104) {
+				if (avgAmp > 108) {
 					/* Left */
 					console.log("left");
 					///chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Left", "args" : args});
