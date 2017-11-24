@@ -188,9 +188,9 @@ function checkFullScreen(args, type, callback) {
 	
 	clearInterval(inactivityClearer);
 	/*
-	 * If there's no follow-up gesture within 2.5 seconds, reset state
+	 * If there's no follow-up gesture within 8 seconds, reset state
 	 */
-	inactivityClearer = setTimeout(inactivityClear, 2500);
+	inactivityClearer = setTimeout(inactivityClear, 8000);
 
 	gestureHistory[currentIndex] = type;
 
