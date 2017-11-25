@@ -10,6 +10,7 @@ function inactivityClear() {
 }
 
 function movementVertical(args, type, fullScreenElement) {
+	console.log(type);
 
 	if (fullScreenElement == undefined) {
 		var speed = Math.abs(args.avgDiff) * 100;
@@ -45,7 +46,8 @@ function movementVertical(args, type, fullScreenElement) {
 }
 
 function movementHorizontal(args, type, fullScreenElement) {
-	
+	console.log(type);
+
 	if (fullScreenElement == undefined) {
 		if (gestureHistory.length != historySize) {
 			return;
@@ -63,6 +65,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 					// Send message to enable SoundWave on Left Tab and perform the action
 					var args = { "action" : "MoveToLeftTab" };
 					chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+					gestureHistory = [];
+					currentIndex = -1;
 	
 				} else {
 					/*
@@ -72,6 +76,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 					// Send message to enable SoundWave on Right Tab and perform the action
 					var args = { "action" : "MoveToRightTab" };
 					chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+					gestureHistory = [];
+					currentIndex = -1;
 				}
 
 		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
@@ -83,6 +89,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				// Send message to enable SoundWave on new Tab and perform the action
 				var args = { "action" : "CreateNewTab" };
 				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+				gestureHistory = [];
+				currentIndex = -1;
 
 		} else if (type == "Right" && type == gestureHistory[currentIndex] &&
 			"Left" == previousGesture && type == beforePreviousGesture) {
@@ -93,6 +101,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				// Send message to enable SoundWave and perform the action
 				var args = { "action" : "CloseCurrentTab" };
 				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+				gestureHistory = [];
+				currentIndex = -1;
 
 		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
 			type == previousGesture && beforePreviousGesture == "Right") {
@@ -103,6 +113,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				// Send message to perform the action and enable SoundWave on the previously closed tab
 				var args = { "action" : "ReopenClosedTab" };
 				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+				gestureHistory = [];
+				currentIndex = -1;
 		
 		} else if (type == "Right" && type == gestureHistory[currentIndex] &&
 			previousGesture == "Left" && beforePreviousGesture == "Left") {
@@ -113,6 +125,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				// Send message to perform the action
 				var args = { "action" : "DetectLanguage" };
 				chrome.runtime.sendMessage({"message" : "EnableSoundWave", "args" : args});
+				gestureHistory = [];
+				currentIndex = -1;
 		
 		} else if (type == "Left" && type == gestureHistory[currentIndex] &&
 			previousGesture == "Right" && beforePreviousGesture == "Right") {
@@ -121,6 +135,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				*/
 
 				document.body.style.backgroundColor = "gainsboro";
+				gestureHistory = [];
+				currentIndex = -1;
 		
 		}  else if (type == "Right" && type == gestureHistory[currentIndex] &&
 			previousGesture == type && beforePreviousGesture == "Left") {
@@ -129,10 +145,11 @@ function movementHorizontal(args, type, fullScreenElement) {
 				*/
 
 				document.body.style.backgroundColor = "white";
+				gestureHistory = [];
+				currentIndex = -1;
 		}
 		
-		gestureHistory = [];
-		currentIndex = -1;
+
 
 	} else {
 		var media = (fullScreenElement.getElementsByTagName('video') ||
@@ -156,7 +173,7 @@ function movementHorizontal(args, type, fullScreenElement) {
 function movementTap(args, type, fullScreenElement) {
 
 	if (fullScreenElement != undefined) {
-		
+		console.log(type);
 		var media = (fullScreenElement.getElementsByTagName('video') ||
 			fullScreenElement.getElementsByTagName('audio'))[0];
 
@@ -171,26 +188,57 @@ function movementTap(args, type, fullScreenElement) {
 		} else {
 			media.pause();
 		}
-	} else {
-		if (args.avgDiff > 0) {
-			movementVertical(args, "Up", fullScreenElement);
-			console.log("Up");
-		} else {
-			movementVertical(args, "Down", fullScreenElement);
-			console.log("Down");
-		}
 	}
 }
 
+function modifyActionOnTap(args) {
+
+	if (args.avgDiff > 0) {
+		if (args.amp > 108) {
+			/* Left */
+			return { type: "Left", callback: movementHorizontal};
+		}
+		else {
+			/* Up */
+			return { type: "Up", callback: movementVertical};
+		}
+
+	} else {
+		if (args.amp > 108) {
+			/* Right */
+			return { type: "Right", callback: movementHorizontal};;
+		}
+		else {
+			/* Down */
+			return { type: "Down", callback: movementVertical};;
+		}			
+	}
+
+}
 function checkFullScreen(args, type, callback) {
 
 	var fullScreenElement = (document.fullscreenElement || document.webkitFullscreenElement);
 	
+	var media = undefined;
+	
+	if (fullScreenElement != undefined) {
+		media = (fullScreenElement.getElementsByTagName('video') ||
+			fullScreenElement.getElementsByTagName('audio'))[0];
+	}
+
 	clearInterval(inactivityClearer);
 	/*
 	 * If there's no follow-up gesture within 8 seconds, reset state
 	 */
 	inactivityClearer = setTimeout(inactivityClear, 8000);
+
+	if ((fullScreenElement == undefined || (media.paused && args.dirChanges <= 2) || 
+					(!media.paused && args.dirChanges <= 3)) && type == "Tap") {
+		console.log(type);
+		response = modifyActionOnTap(args);
+		type = response.type;
+		callback = response.callback;
+	}
 
 	gestureHistory[currentIndex] = type;
 

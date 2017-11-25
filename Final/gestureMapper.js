@@ -2,7 +2,7 @@ var coolDownDefault = 8, coolDownRemaining = coolDownDefault;
 
 var prevDirection = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
-var binDecisionThreshold = 8, binReadRemaining = binDecisionThreshold;
+var binDecisionThreshold = 12, binReadRemaining = binDecisionThreshold;
 
 var currentTabId = -1;
 
@@ -70,38 +70,39 @@ function identifyGesture(args) {
 		var avgAmp = accumAmp / binDecisionThreshold;
 
 		console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
-		var args = { "avgDiff" : avgDiff };
+		var args = { "avgDiff" : avgDiff , "dirChanges": dirChanges };
 		if ((dirChanges == 2 && avgDiff >= 12 && avgAmp < 90) || 
 			(dirChanges == 1 && avgDiff >= 12 && avgAmp < 90) ||
 			dirChanges > 2) {
 			/* Tap */
-			console.log("Tap");
+			//console.log("Tap");
+			args["amp"] = avgAmp;
 			chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap", "args": args});
 		} else if (dirChanges <= 2) {
 			/* Right or Down Movement */
 			if (prevDirection == -1) {
 				if (avgAmp > 108) {
 					/* Right */
-					console.log("right");
-					//chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Right", "args" : args});
+					//console.log("right");
+					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Right", "args" : args});
 				}
 				else {
 					/* Down */
-					console.log("down");
-					//chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Down", "args" : args});
+					//console.log("down");
+					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Down", "args" : args});
 				}
 			}
 			/* Left or Up Movement */
 			else if (prevDirection == 1) {
 				if (avgAmp > 108) {
 					/* Left */
-					console.log("left");
-					///chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Left", "args" : args});
+					//console.log("left");
+					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Left", "args" : args});
 				}
 				else {
 					/* Up */
-					console.log("up");
-					//chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Up", "args" : args});
+					//console.log("up");
+					chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Up", "args" : args});
 				}
 			}
 		}

@@ -12,6 +12,7 @@ var state = {
 var tabsInUse = {}
 
 function extensionAction(tabID) {
+	console.log(tabsInUse[tabID]);
 	if (tabsInUse[tabID] == undefined) {
 		chrome.browserAction.setIcon({path: "on", tabId:tabID});
 		chrome.tabs.sendMessage(tabID, {"tab" : tabID, "message": "Init"});
@@ -37,6 +38,10 @@ chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+	if (changeInfo.audible != undefined) {
+		return;
+	}
+
 	if ((tabsInUse[tab.id] == undefined) || (tabsInUse[tab.id] == state.STOPPED)) {
 		chrome.browserAction.setIcon({path: "off", tabId:tab.id});
 		delete tabsInUse[tab.id];
@@ -61,6 +66,7 @@ function performAction(request) {
 				newTabIdx = (request.tabIndex + length + 1) % length;
 			}
 			
+			extensionAction(request.tabId);
 			chrome.tabs.update(tabs[newTabIdx].id, {active: true});
 			
 			if (tabsInUse[tabs[newTabIdx].id] != state.RUNNING) {
@@ -72,6 +78,8 @@ function performAction(request) {
 				if (tabsInUse[tab.id] != state.RUNNING) {
 					extensionAction(tab.id);
 				}
+				console.log(request.tabId, tab.id);
+				extensionAction(request.tabId);
 			});
 
 		} else if (request.args.action == "CloseCurrentTab") {
@@ -94,6 +102,8 @@ function performAction(request) {
 				if (tabsInUse[response.tab.id] != state.RUNNING) {
 					extensionAction(response.tab.id);
 				}
+				extensionAction(request.tabId);
+				console.log(request.tabId, response.tab.id);
 			});
 
 		} else if (request.args.action == "DetectLanguage") {
