@@ -16,6 +16,8 @@ WordReplacer - Sample Chrome Extension developed for fun
 
 7) Finally, map gestures to browser actions - DONE. Need to find action for repeated horziontal non-video movements - Ideal is to move between tabs. - Actions added 5. 3 more left. - DONE
 
+8) Check if multiple tabs have soundwave enabled, are both tabs detecting gestures?
+
 ------------
 
 Tests run so far:
