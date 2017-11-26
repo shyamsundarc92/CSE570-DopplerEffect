@@ -32,6 +32,11 @@ function findPeakLimits(audioData, direction, peakTone) {
 
 	var boundary = 0;
 
+	/*
+	 * Find the bin index boundary where the amplitude
+	 * drops off below the determined limit in comparison
+	 * to the peak tone amplitude
+	 */
 	while (++boundary <= frequencyBinLimit) {
 		var idx = peakToneBin + boundary * direction;
 
@@ -66,7 +71,8 @@ function processAudioData() {
 
 	if (audioData[convertFreqToIndex(oscillator.frequency.value)] != 0) {
 		/*
-		 * Find the limits of the pilot tone peak
+		 * Find the limits either side of the pilot tone peak due to reflection
+		 * via doppler effect
 		 */
 		leftBoundary = findPeakLimits(audioData, -1, oscillator.frequency.value);
 
@@ -78,15 +84,24 @@ function processAudioData() {
 	var args = {"left" : leftBoundary, "right" : rightBoundary,
 		"peakAmp" : audioData[convertFreqToIndex(oscillator.frequency.value)]};
 
+	/*
+	 * Send the result over to the gestureMapper script for identification and processing
+	 */
 	chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "SampledResult", "args" : args});
 }
 
+/*
+ * Transmit audio tone from the speaker and process the reflected tone at the microphone
+ */
 function startSoundWave() {
 	oscillator.connect(audioContext.destination);
 
 	processAudioData();
 }
 
+/*
+ * Stop audio tranmission from the speaker
+ */
 function stopSoundWave() {
 	if (oscillator != undefined) {
 		oscillator.disconnect(audioContext.destination);

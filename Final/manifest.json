@@ -1,8 +1,8 @@
 {
 	"manifest_version":	2,
-	"name":	"Doppler Effect!",
+	"name":	"SoundWave!",
 	"version":	"1.0",
-	"description":	"Control Chrome Browser with your hands!",
+	"description":	"Control Chrome Browser with your hands using Doppler Effect!",
 	"browser_action":
 	{
 		"default_icon":	"off"
