@@ -1,6 +1,4 @@
-var gestureHistory = [];
-var historySize = 3;
-var currentIndex = 0;
+var gestureHistory = [], historySize = 3, currentIndex = 0;
 
 var inactivityClearer = setTimeout(inactivityClear, 8000);
 

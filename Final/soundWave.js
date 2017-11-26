@@ -8,14 +8,9 @@ function convertFreqToIndex(freq) {
 }
 
 /*
- * Convert given FFT Bin Index to Frequency
- */
-function convertIndexToFreq(idx) {
-	return Math.round(idx * (audioContext.sampleRate / analyser.fftSize));
-}
-
-/*
  * Given a peak tone frequency, find the limit on requested side of the peak tone
+ * based on the passed direction argument:
+ *
  * -1 - Left Side Limit
  * 1  - Right Side Limit
  */

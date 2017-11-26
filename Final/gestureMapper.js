@@ -17,7 +17,7 @@ function inactivityClear() {
 }
 
 /*
- * Reset values
+ * Reset thresholds
  */
 function resetThresholds() {
    	accumDiff = 0;
@@ -26,7 +26,7 @@ function resetThresholds() {
 }
 
 /*
- * main gesture identification function
+ * Main gesture identification function
  */
 function identifyGesture(args) {
 	clearInterval(inactivityClearer);
@@ -50,6 +50,8 @@ function identifyGesture(args) {
 	/*
 	 * Cool Down done - process the sample if the values exceed the minimum threshold or
 	 * if there is a definite shift in direction
+	 *
+	 * Thresholds determined by experimentation
 	 */
 	var diff = args.left - args.right;
 
@@ -70,7 +72,8 @@ function identifyGesture(args) {
 	}
 
 	/* 
-	 * Read continuous same direction bins that meet these criteria and use their values only
+	 * Read continuous same direction bins that meet these criteria
+	 * and use their averages for gesture identification
 	 */
 	accumDiff += diff;
 	accumAmp += args.peakAmp;
@@ -86,14 +89,14 @@ function identifyGesture(args) {
 		
 		if ((dirChanges == 2 && avgDiff >= 12 && avgAmp < 90) || 
 			(dirChanges == 1 && avgDiff >= 12 && avgAmp < 90) ||
-			dirChanges > 2) {
+			(dirChanges > 2)) {
 			/* 
 			 * Tap
 			 */
 			args["amp"] = avgAmp;
 			chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap", "args": args});
 
-		} else if (dirChanges <= 2) {
+		} else {
 			
 			if (prevDirection == -1) {
 				/*
