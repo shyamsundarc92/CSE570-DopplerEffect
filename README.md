@@ -75,7 +75,7 @@ Video Link: https://www.youtube.com/watch?v=Ri3WsPDi4MY
 
 Evaluation: 
 1. Environments:
-Clean Envi, Surrounding noise, Sound from laptop while eva
+Clean Envi, Surrounding noise, Sound from laptop while evaluating
 
 2. Positions:
 Seated and Standing
@@ -84,4 +84,4 @@ Seated and Standing
 
 4. Performance under unintended gestures
 
-Record % of gestures, volume level etc.
+Record % of sucessful gesture detection, volume level etc.
