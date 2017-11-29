@@ -144,28 +144,35 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	 * Receive and service/forward messages from content scripts
 	 */
 
-	if (request.message == "SampledResult" || request.message == "Up" ||
-		request.message == "Down" || request.message == "Left" ||
-		request.message == "Right" || request.message == "Tap") {
-		
-		if (!("args" in request)) {
-			request["args"] = undefined;
+	chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+
+		if (request.tab != tabs[0].id) {
+			return;
 		}
-		
-		chrome.tabs.sendMessage(request.tab, request);
 
-	} else if (request.message == "Error") {
-		delete tabsInUse[request.tab];
-		chrome.browserAction.setIcon({path: "off", tabId:request.tab});
+		if (request.message == "SampledResult" || request.message == "Up" ||
+			request.message == "Down" || request.message == "Left" ||
+			request.message == "Right" || request.message == "Tap") {
+			
+			if (!("args" in request)) {
+				request["args"] = undefined;
+			}
+			
+			chrome.tabs.sendMessage(request.tab, request);
 
-	} else if (request.message == "EnableSoundWave") {
+		} else if (request.message == "Error") {
+			delete tabsInUse[request.tab];
+			chrome.browserAction.setIcon({path: "off", tabId:request.tab});
 
-		chrome.tabs.getSelected(null, function (tab) {
-			var activeTabId = tab.id;
-			request["tabId"] = activeTabId;
-			request["tabIndex"] = tab.index;
-			performAction(request);
-		});
+		} else if (request.message == "EnableSoundWave") {
 
-	}
+			chrome.tabs.getSelected(null, function (tab) {
+				var activeTabId = tab.id;
+				request["tabId"] = activeTabId;
+				request["tabIndex"] = tab.index;
+				performAction(request);
+			});
+
+		}
+	});
 });
