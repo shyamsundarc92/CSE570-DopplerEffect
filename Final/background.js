@@ -75,9 +75,9 @@ function performAction(request) {
 			}
 		
 			/*
-			 * Disable SoundWave for current tab and enable it for the new active tab
+			 * Enable SoundWave for the new active tab
 			 */
-			extensionAction(request.tabId);
+			//extensionAction(request.tabId);
 
 			chrome.tabs.update(tabs[newTabIdx].id, {active: true});
 			
@@ -86,15 +86,15 @@ function performAction(request) {
 			}
 
 		} else if (request.args.action == "CreateNewTab") {
+			/*
+			 * Enable soundWave for the new active tab
+			 */
 			chrome.tabs.create({active: true, url: "https://www.google.com/"}, function (tab) {
 				if (tabsInUse[tab.id] != state.RUNNING) {
 					extensionAction(tab.id);
 				}
 
-				/*
-				 * Disable SoundWave for current tab and enable it for the new active tab
-				 */
-				extensionAction(request.tabId);
+				//extensionAction(request.tabId);
 			});
 
 		} else if (request.args.action == "CloseCurrentTab") {
@@ -102,7 +102,7 @@ function performAction(request) {
 
 			
 			/*
-			 * Enable soundwave for the newly active tab
+			 * Enable SoundWave for the newly active tab
 			 */
 			setTimeout(function() {
 				chrome.tabs.getSelected(null, function (tab) {
@@ -119,9 +119,9 @@ function performAction(request) {
 				
 
 				/*
-				 * Disable SoundWave for current tab and enable it for the new active tab
+				 * Enable SoundWave for the new active tab
 				 */
-				extensionAction(request.tabId);
+				//extensionAction(request.tabId);
 				
 				if (tabsInUse[response.tab.id] != state.RUNNING) {
 					extensionAction(response.tab.id);
