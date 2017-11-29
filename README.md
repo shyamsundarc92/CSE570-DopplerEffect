@@ -72,3 +72,16 @@ Diff is > 10 but AMplitude of peak is same as above
 Tap: Left hand only palm over left keyboard
 
 Video Link: https://www.youtube.com/watch?v=Ri3WsPDi4MY
+
+Evaluation: 
+1. Environments:
+Clean Envi, Surrounding noise, Sound from laptop while eva
+
+2. Positions:
+Seated and Standing
+
+3. Different People
+
+4. Performance under unintended gestures
+
+Record % of gestures, volume level etc.
