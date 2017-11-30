@@ -11,7 +11,7 @@
 	[
 		{
 			"matches":	["<all_urls>"],
-			"js":	["soundWave.js", "gestureMapper.js", "browserAction.js"]
+			"js":	["soundWave.js", "gestureMapper.js", "browserAction.js", "keyPressDetector.js"]
 		}
 	],
 	"background":

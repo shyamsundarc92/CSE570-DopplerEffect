@@ -139,6 +139,8 @@ function performAction(request) {
 
 }
 
+var isKeyPressed = false;
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	/*
 	 * Receive and service/forward messages from content scripts
@@ -146,7 +148,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
 
-		if (request.tab != tabs[0].id) {
+		if (request.message == "KeyPress") {
+			isKeyPressed = true;
+			return;
+		}
+
+		if (request.message == "KeyRelease") {
+			isKeyPressed = false;
+			return;
+		}
+
+		if (request.tab != tabs[0].id || isKeyPressed) {
 			return;
 		}
 
