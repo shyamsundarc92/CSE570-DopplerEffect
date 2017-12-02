@@ -138,9 +138,9 @@ function movementHorizontal(args, type, fullScreenElement) {
 				currentIndex = -1;
 		
 		} else if (type == "Right" && type == gestureHistory[currentIndex] &&
-			previousGesture == "Left" && beforePreviousGesture == "Left") {
+			previousGesture == type && beforePreviousGesture == "Left") {
 				/*
-				 * L L R action - Detect primary language in current tab
+				 * L R R action - Detect primary language in current tab
 				 */
 				var args = { "action" : "DetectLanguage" };
 				chrome.runtime.sendMessage({"tab": currTab, "message" : "EnableSoundWave", "args" : args});
@@ -157,9 +157,9 @@ function movementHorizontal(args, type, fullScreenElement) {
 				currentIndex = -1;
 		
 		}  else if (type == "Right" && type == gestureHistory[currentIndex] &&
-			previousGesture == type && beforePreviousGesture == "Left") {
+			previousGesture == "Left" && beforePreviousGesture == "Left") {
 				/*
-				 * L R R action - Change gray background color to white
+				 * L L R action - Change gray background color to white
 				 */
 				document.body.style.backgroundColor = "white";
 				gestureHistory = [];
