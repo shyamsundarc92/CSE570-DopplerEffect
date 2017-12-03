@@ -122,7 +122,7 @@ function performAction(request) {
 				 * Enable SoundWave for the new active tab
 				 */
 				//extensionAction(request.tabId);
-				
+
 				if (tabsInUse[response.tab.id] != state.RUNNING) {
 					extensionAction(response.tab.id);
 				}	

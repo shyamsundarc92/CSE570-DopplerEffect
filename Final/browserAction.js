@@ -66,7 +66,7 @@ function movementVertical(args, type, fullScreenElement) {
  */
 function movementHorizontal(args, type, fullScreenElement) {
 	console.log(type);
-	
+
 	/*
 	 * If there is no full screen media playback, map combination of horizontal
 	 * actions to varied browser actions

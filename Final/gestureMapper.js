@@ -1,4 +1,4 @@
-var coolDownDefault = 8, coolDownRemaining = coolDownDefault;
+var coolDownDefault = 12, coolDownRemaining = coolDownDefault;
 
 var prevDirection = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
@@ -29,6 +29,7 @@ function resetThresholds() {
  * Main gesture identification function
  */
 function identifyGesture(args) {
+	if ((args.left - args.right) != 0) {
 	clearInterval(inactivityClearer);
 	/*
 	 * If there's no follow-up gesture within 2.5 seconds, reset state
@@ -36,7 +37,7 @@ function identifyGesture(args) {
 	 * detected as belonging to the same gesture
 	 */
 	inactivityClearer = setTimeout(inactivityClear, 2500);
-
+	}
 	/*
 	 * There is a cool down period between successive gesture identifcation
 	 * 
@@ -83,7 +84,7 @@ function identifyGesture(args) {
 		var avgDiff = accumDiff / binDecisionThreshold;
 		var avgAmp = accumAmp / binDecisionThreshold;
 
-		//console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
+		console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
 		
 		var args = { "avgDiff" : avgDiff , "dirChanges": dirChanges };
 		
