@@ -84,7 +84,7 @@ function identifyGesture(args) {
 		var avgDiff = accumDiff / binDecisionThreshold;
 		var avgAmp = accumAmp / binDecisionThreshold;
 
-		console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
+		//console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
 		
 		var args = { "avgDiff" : avgDiff , "dirChanges": dirChanges };
 		
