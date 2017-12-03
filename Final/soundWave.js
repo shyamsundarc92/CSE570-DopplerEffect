@@ -147,11 +147,9 @@ function initSoundWave() {
 
 chrome.runtime.onMessage.addListener(function(request, sender) {
 	if (request.message == "Init" || request.message == "Updated") {
-		console.log("test");
 		if (oscillator != undefined) {
 			return;
 		}
-
 		console.log(request.message, " & Start");
 		initSoundWave();
 		currentTabId = request.tab;
