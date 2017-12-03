@@ -26,21 +26,21 @@ function resetThresholds() {
 }
 
 /*
- * Main gesture identification function
+ * Theshold-based Gesture Identification Algorithm
  */
 function identifyGesture(args) {
 	if ((args.left - args.right) != 0) {
-	clearInterval(inactivityClearer);
-	/*
-	 * If there's no follow-up gesture within 2.5 seconds, reset state
-	 * this prevents actions occuring at varied time intervals being
-	 * detected as belonging to the same gesture
-	 */
-	inactivityClearer = setTimeout(inactivityClear, 2500);
+		clearInterval(inactivityClearer);
+		/*
+		 * If there's no follow-up gesture within 2.5 seconds, reset state
+		 * this prevents actions occuring at varied time intervals being
+		 * detected as belonging to the same gesture
+		 */
+		inactivityClearer = setTimeout(inactivityClear, 2500);
 	}
+	
 	/*
 	 * There is a cool down period between successive gesture identifcation
-	 * 
 	 * If still in the cool down period, ignore samples coming in
 	 */
 	if (coolDownRemaining > 0) {
@@ -92,7 +92,7 @@ function identifyGesture(args) {
 			(dirChanges == 1 && avgDiff >= 12 && avgAmp < 90) ||
 			(dirChanges > 2)) {
 			/* 
-			 * Tap
+			 * Double Tap motion
 			 */
 			args["amp"] = avgAmp;
 			chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Tap", "args": args});

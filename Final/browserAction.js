@@ -93,7 +93,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 					 * 3 Successive Lefts
 					 */
 					var args = { "action" : "MoveToLeftTab" };
-					chrome.runtime.sendMessage({"tab": currTab, "message" : "EnableSoundWave", "args" : args});
+					chrome.runtime.sendMessage({"tab": currTab,
+						"message" : "EnableSoundWave", "args" : args});
 					gestureHistory = [];
 					currentIndex = -1;
 	
@@ -102,7 +103,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 					 * 3 Successive Rights
 					 */
 					var args = { "action" : "MoveToRightTab" };
-					chrome.runtime.sendMessage({"tab": currTab, "message" : "EnableSoundWave", "args" : args});
+					chrome.runtime.sendMessage({"tab": currTab,
+						"message" : "EnableSoundWave", "args" : args});
 					gestureHistory = [];
 					currentIndex = -1;
 				}
@@ -113,7 +115,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				 * L R L action - Create new Tab
 				 */
 				var args = { "action" : "CreateNewTab" };
-				chrome.runtime.sendMessage({"tab": currTab, "message" : "EnableSoundWave", "args" : args});
+				chrome.runtime.sendMessage({"tab": currTab,
+					"message" : "EnableSoundWave", "args" : args});
 				gestureHistory = [];
 				currentIndex = -1;
 
@@ -123,7 +126,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				 * R L R action - Close current Tab
 				 */
 				var args = { "action" : "CloseCurrentTab" };
-				chrome.runtime.sendMessage({"tab": currTab, "message" : "EnableSoundWave", "args" : args});
+				chrome.runtime.sendMessage({"tab": currTab,
+					"message" : "EnableSoundWave", "args" : args});
 				gestureHistory = [];
 				currentIndex = -1;
 
@@ -133,7 +137,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				 * R L L action - Reopen last closed Tab
 				 */
 				var args = { "action" : "ReopenClosedTab" };
-				chrome.runtime.sendMessage({"tab": currTab, "message" : "EnableSoundWave", "args" : args});
+				chrome.runtime.sendMessage({"tab": currTab,
+					"message" : "EnableSoundWave", "args" : args});
 				gestureHistory = [];
 				currentIndex = -1;
 		
@@ -143,7 +148,8 @@ function movementHorizontal(args, type, fullScreenElement) {
 				 * L R R action - Detect primary language in current tab
 				 */
 				var args = { "action" : "DetectLanguage" };
-				chrome.runtime.sendMessage({"tab": currTab, "message" : "EnableSoundWave", "args" : args});
+				chrome.runtime.sendMessage({"tab": currTab,
+					"message" : "EnableSoundWave", "args" : args});
 				gestureHistory = [];
 				currentIndex = -1;
 		
@@ -185,15 +191,15 @@ function movementHorizontal(args, type, fullScreenElement) {
 }
 
 /*
- * map "Tap" like hand gesture to browser action
+ * map "Double Tap" like hand gesture to browser action
  */
 function movementTap(args, type, fullScreenElement) {
 	
 	/*
-	 * For full screen media playback, map Tap gesture to media play/pause
+	 * For full screen media playback, map Double Tap gesture to media play/pause
 	 */
 	if (fullScreenElement != undefined) {
-		console.log(type);
+		console.log("Double Tap");
 
 		var media = (fullScreenElement.getElementsByTagName('video') ||
 			fullScreenElement.getElementsByTagName('audio'))[0];
@@ -213,7 +219,7 @@ function movementTap(args, type, fullScreenElement) {
 }
 
 /*
- * Modify Tap gesture to vertical/horizontal actions based on conditions
+ * Modify Double Tap gesture to vertical/horizontal actions based on conditions
  * discussed below
  */
 function modifyActionOnTap(args) {
@@ -301,6 +307,7 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
 	if (request.message == "Up" || request.message == "Down" ||
 		request.message == "Left" || request.message == "Right" ||
 		request.message == "Tap") {
+		
 		var callback = undefined;
 		currTab = request.tab;
 

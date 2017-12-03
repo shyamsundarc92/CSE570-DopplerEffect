@@ -77,8 +77,6 @@ function performAction(request) {
 			/*
 			 * Enable SoundWave for the new active tab
 			 */
-			//extensionAction(request.tabId);
-
 			chrome.tabs.update(tabs[newTabIdx].id, {active: true});
 			
 			if (tabsInUse[tabs[newTabIdx].id] != state.RUNNING) {
@@ -93,8 +91,6 @@ function performAction(request) {
 				if (tabsInUse[tab.id] != state.RUNNING) {
 					extensionAction(tab.id);
 				}
-
-				//extensionAction(request.tabId);
 			});
 
 		} else if (request.args.action == "CloseCurrentTab") {
@@ -121,8 +117,6 @@ function performAction(request) {
 				/*
 				 * Enable SoundWave for the new active tab
 				 */
-				//extensionAction(request.tabId);
-
 				if (tabsInUse[response.tab.id] != state.RUNNING) {
 					extensionAction(response.tab.id);
 				}	
@@ -141,6 +135,12 @@ function performAction(request) {
 
 var isKeyPressed = false;
 
+function KeyPressCoolDownDone() {
+	isKeyPressed = false;
+}
+
+var keyPressCoolDown = undefined;
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	/*
 	 * Receive and service/forward messages from content scripts
@@ -150,11 +150,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 		if (request.message == "KeyPress") {
 			isKeyPressed = true;
+			clearInterval(keyPressCoolDown);
 			return;
 		}
 
 		if (request.message == "KeyRelease") {
-			isKeyPressed = false;
+			keyPressCoolDown = setTimeout(keyPressCoolDownDone, 1000);
 			return;
 		}
 
