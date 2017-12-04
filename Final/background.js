@@ -156,11 +156,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 		if (request.message == "KeyRelease") {
 			/*
-			 * After final key is released, allow a 1 second cool down
+			 * After final key is released, allow a 2 second cool down
 			 * to prevent residual hand motion from being detected as
 			 * a gesture
 			 */
-			keyPressCoolDown = setTimeout(keyPressCoolDownDone, 1000);
+			keyPressCoolDown = setTimeout(KeyPressCoolDownDone, 2000);
 			return;
 		}
 
