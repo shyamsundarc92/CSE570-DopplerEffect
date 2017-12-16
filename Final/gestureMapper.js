@@ -1,8 +1,8 @@
 var coolDownDefault = 12, coolDownRemaining = coolDownDefault;
 
-var prevDirection = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
+var dirInCurrentWindow = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
-var binDecisionThreshold = 12, binReadRemaining = binDecisionThreshold;
+var sampleDecisionThreshold = 12, sampleReadRemaining = sampleDecisionThreshold;
 
 var currentTabId = -1;
 
@@ -13,16 +13,16 @@ var currentTabId = -1;
 function inactivityClear() {
 	resetThresholds();
 	dirChanges = 0;
-	prevDirection = 0;
+	dirInCurrentWindow = 0;
 }
 
 /*
- * Reset thresholds
+ * Reset thresholds and start a new gesture identification window
  */
 function resetThresholds() {
    	accumDiff = 0;
    	accumAmp = 0;
-   	binReadRemaining = binDecisionThreshold;
+   	sampleReadRemaining = sampleDecisionThreshold;
 }
 
 /*
@@ -30,12 +30,12 @@ function resetThresholds() {
  */
 function identifyGesture(args) {
 	if ((args.left - args.right) != 0) {
-		clearInterval(inactivityClearer);
 		/*
 		 * If there's no follow-up gesture within 2.5 seconds, reset state
 		 * this prevents actions occuring at varied time intervals being
 		 * detected as belonging to the same gesture
 		 */
+		clearInterval(inactivityClearer);
 		inactivityClearer = setTimeout(inactivityClear, 2500);
 	}
 	
@@ -63,30 +63,31 @@ function identifyGesture(args) {
 	}
 
 	/*
-	 * If there is a change in direction, record it and reset thresholds
+	 * If there is a change in direction, record it and reset thresholds to
+	 * start a new gesture identification window
 	 */
-	if (dir != prevDirection && dir != 0) {
-		prevDirection = dir;
+	if (dir != dirInCurrentWindow && dir != 0) {
+		dirInCurrentWindow = dir;
 		dirChanges++;
 		resetThresholds();
 		return;
 	}
 
 	/* 
-	 * Read continuous same direction bins that meet these criteria
+	 * Read continuous same direction samples that meet these criteria
 	 * and use their averages for gesture identification
 	 */
 	accumDiff += diff;
 	accumAmp += args.peakAmp;
-	binReadRemaining--;
+	sampleReadRemaining--;
 
-	if (binReadRemaining == 0) {
-		var avgDiff = accumDiff / binDecisionThreshold;
-		var avgAmp = accumAmp / binDecisionThreshold;
+	if (sampleReadRemaining == 0) {
+		var avgDiff = accumDiff / sampleDecisionThreshold;
+		var avgAmp = accumAmp / sampleDecisionThreshold;
 
-		//console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
+		console.log("dir: ", dirChanges, "diff: ", avgDiff, "amp: ", avgAmp);
 		
-		var args = { "avgDiff" : avgDiff , "dirChanges": dirChanges };
+		var args = { "avgDiff" : avgDiff , "dirChanges" : dirChanges };
 		
 		if ((dirChanges == 2 && avgDiff >= 12 && avgAmp < 90) || 
 			(dirChanges == 1 && avgDiff >= 12 && avgAmp < 90) ||
@@ -99,7 +100,7 @@ function identifyGesture(args) {
 
 		} else {
 			
-			if (prevDirection == -1) {
+			if (dirInCurrentWindow == -1) {
 				/*
 				 * Hand movement Right or Down
 				 */
@@ -113,7 +114,7 @@ function identifyGesture(args) {
 						"args" : args});
 				}
 
-			} else if (prevDirection == 1) {
+			} else if (dirInCurrentWindow == 1) {
 				/* 
 				 * Hand movement Left or Up
 				 */
@@ -134,7 +135,7 @@ function identifyGesture(args) {
 		 */
 		resetThresholds();
 		coolDownRemaining = coolDownDefault;
-		prevDirection = 0;
+		dirInCurrentWindow = 0;
 		dirChanges = 0;
 	}
 }
@@ -147,7 +148,7 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
 	} else if (request.message == "Start") {
 		coolDownRemaining = coolDownDefault;
 		dirChanges = 0;
-		prevDirection = 0;
+		dirInCurrentWindow = 0;
 		resetThresholds();
 	}
 });

@@ -80,7 +80,7 @@ function processAudioData() {
 		"peakAmp" : audioData[convertFreqToIndex(oscillator.frequency.value)]};
 
 	/*
-	 * Send the result over to the gestureMapper script for identification and processing
+	 * Send the results to the gestureMapper module for identification and processing
 	 */
 	chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "SampledResult", "args" : args});
 }
@@ -139,7 +139,7 @@ function initSoundWave() {
 		startSoundWave();
 
 	}, function() {
-		alert("ERROR - Need Microphone access for extension to work");
+		alert("ERROR - Microphone access is required for SoundWave extension to work");
 		
 		chrome.runtime.sendMessage({"tab" : currentTabId, "message" : "Error"});
 	});
@@ -150,13 +150,13 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 		if (oscillator != undefined) {
 			return;
 		}
-		console.log(request.message, " & Start");
+		console.log(request.message, " & Start SoundWave");
 		initSoundWave();
 		currentTabId = request.tab;
 	} else if (request.message == "Start") {
-		console.log("Start");
+		console.log("Start SoundWave");
 		startSoundWave();
-	} else if (request.message == "Stop") {
+	} else if (request.message == "Stop SoundWave") {
 		console.log("Stop");
 		stopSoundWave();
 	}

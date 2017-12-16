@@ -7,10 +7,13 @@ var state = {
 };
 
 /*
- * keeps tracks of the state of the extension in each browser tab
+ * keeps tracks of the state of the SoundWave extension in each browser tab
  */
 var tabsInUse = {}
 
+/*
+ * Main Function that controls the state of SoundWave in each tab
+ */
 function extensionAction(tabID) {
 	if (tabsInUse[tabID] == undefined) {
 		chrome.browserAction.setIcon({path: "on", tabId:tabID});
@@ -75,7 +78,7 @@ function performAction(request) {
 			}
 		
 			/*
-			 * Enable SoundWave for the new active tab
+			 * Shift to left/right tab and enable SoundWave for it
 			 */
 			chrome.tabs.update(tabs[newTabIdx].id, {active: true});
 			
@@ -85,7 +88,7 @@ function performAction(request) {
 
 		} else if (request.args.action == "CreateNewTab") {
 			/*
-			 * Enable soundWave for the new active tab
+			 * Create a new tab and enable SoundWave for it
 			 */
 			chrome.tabs.create({active: true, url: "https://www.google.com/"}, function (tab) {
 				if (tabsInUse[tab.id] != state.RUNNING) {
@@ -98,7 +101,7 @@ function performAction(request) {
 
 			
 			/*
-			 * Enable SoundWave for the newly active tab
+			 * Since current tab is closed, enable SoundWave for the now active tab
 			 */
 			setTimeout(function() {
 				chrome.tabs.getSelected(null, function (tab) {
@@ -112,10 +115,9 @@ function performAction(request) {
 
 		} else if (request.args.action == "ReopenClosedTab") {
 			chrome.sessions.restore(function (response) {
-				
 
 				/*
-				 * Enable SoundWave for the new active tab
+				 * Enable SoundWave for the reopened tab
 				 */
 				if (tabsInUse[response.tab.id] != state.RUNNING) {
 					extensionAction(response.tab.id);
@@ -126,11 +128,9 @@ function performAction(request) {
 			chrome.tabs.detectLanguage(request.tabId, function (language) {
 				window.alert("Language used in this page: " + language.toUpperCase());
 			});
-		
+
 		}
-
 	});
-
 }
 
 var isKeyPressed = false;
@@ -141,10 +141,10 @@ function KeyPressCoolDownDone() {
 
 var keyPressCoolDown = undefined;
 
+/*
+ * Receive and service/forward messages from content scripts
+ */
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	/*
-	 * Receive and service/forward messages from content scripts
-	 */
 
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
 
@@ -156,7 +156,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 		if (request.message == "KeyRelease") {
 			/*
-			 * After final key is released, allow a 2 second cool down
+			 * After the final key in the type sequence is released, allow a 2 second cool down
 			 * to prevent residual hand motion from being detected as
 			 * a gesture
 			 */
@@ -184,13 +184,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 		} else if (request.message == "EnableSoundWave") {
 
+			/*
+			 * Horizontal hand gesture triggered this message - perform appropriate
+			 * gesture and enable SoundWave in tab if needed
+			 */
 			chrome.tabs.getSelected(null, function (tab) {
 				var activeTabId = tab.id;
 				request["tabId"] = activeTabId;
 				request["tabIndex"] = tab.index;
 				performAction(request);
 			});
-
 		}
 	});
 });

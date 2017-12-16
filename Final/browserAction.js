@@ -21,9 +21,9 @@ function movementVertical(args, type, fullScreenElement) {
 
 	/*
 	 * If there is no full screen media playback, map vertical
-	 * actions to browser vertical scrolls
+	 * gestures to browser vertical scrolls
 	 *
-	 * For full screen media playback, map vertical actions
+	 * For full screen media playback, map vertical gestures
 	 * to volume controls
 	 */
 	if (fullScreenElement == undefined) {
@@ -68,10 +68,10 @@ function movementHorizontal(args, type, fullScreenElement) {
 	console.log(type);
 
 	/*
-	 * If there is no full screen media playback, map combination of horizontal
-	 * actions to varied browser actions
+	 * If there is no full screen media playback, map combinations of horizontal
+	 * gestures to varied browser actions
 	 *
-	 * For full screen media playback, map horizontal actions to media rewind/fast forward
+	 * For full screen media playback, map horizontal gestures to media rewind/fast forward
 	 * controls
 	 */
 	if (fullScreenElement == undefined) {
@@ -81,9 +81,11 @@ function movementHorizontal(args, type, fullScreenElement) {
 
 		/*
 		 * Since, some of the chrome actions cannot be performed by content scripts
-		 * send the browser action to be performed to the background script
+		 * send the browser action to be performed to the background script which will
+		 * perform the action on the content script's behalf
 		 */
 		var previousGesture = gestureHistory[(currentIndex + historySize - 1) % historySize];
+
 		var beforePreviousGesture = gestureHistory[(currentIndex + historySize - 2) % historySize];
 		
 		if (type == gestureHistory[currentIndex] &&
@@ -269,7 +271,7 @@ function checkFullScreen(args, type, callback) {
 
 	clearInterval(inactivityClearer);
 	/*
-	 * If there's no follow-up gesture within 8 seconds, reset state
+	 * If there's no follow-up gesture within 8 seconds, reset gesture history
 	 */
 	inactivityClearer = setTimeout(inactivityClear, 8000);
 
