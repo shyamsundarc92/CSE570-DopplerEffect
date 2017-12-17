@@ -2,7 +2,8 @@ var coolDownDefault = 12, coolDownRemaining = coolDownDefault;
 
 var dirInCurrentWindow = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
-var sampleDecisionThreshold = 12, sampleReadRemaining = sampleDecisionThreshold;
+var sampleDecisionThreshold = 10, sampleReadRemaining = sampleDecisionThreshold;
+
 
 var currentTabId = -1;
 

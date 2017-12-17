@@ -83,7 +83,7 @@ function performAction(request) {
 			chrome.tabs.update(tabs[newTabIdx].id, {active: true});
 			
 			if (tabsInUse[tabs[newTabIdx].id] != state.RUNNING) {
-				extensionAction(tabs[newTabIdx].id);
+				setTimeout(function () { extensionAction(tabs[newTabIdx].id); }, 2000);
 			}
 
 		} else if (request.args.action == "CreateNewTab") {
@@ -92,7 +92,7 @@ function performAction(request) {
 			 */
 			chrome.tabs.create({active: true, url: "https://www.google.com/"}, function (tab) {
 				if (tabsInUse[tab.id] != state.RUNNING) {
-					extensionAction(tab.id);
+					setTimeout(function () { extensionAction(tab.id); }, 2000);
 				}
 			});
 
@@ -108,7 +108,7 @@ function performAction(request) {
 					var activeTabId = tab.id;
 					
 					if (tabsInUse[activeTabId] != state.RUNNING) {
-						extensionAction(activeTabId);
+						setTimeout(function () { extensionAction(activeTabId); }, 2000);
 					}
 				});
 			}, 1000);
@@ -120,7 +120,7 @@ function performAction(request) {
 				 * Enable SoundWave for the reopened tab
 				 */
 				if (tabsInUse[response.tab.id] != state.RUNNING) {
-					extensionAction(response.tab.id);
+					setTimeout(function () { extensionAction(response.tab.id); }, 2000);
 				}	
 			});
 
@@ -135,7 +135,7 @@ function performAction(request) {
 
 var isKeyPressed = false;
 
-function KeyPressCoolDownDone() {
+function keyPressCoolDownDone() {
 	isKeyPressed = false;
 }
 
@@ -165,6 +165,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		}
 
 		if (request.tab != tabs[0].id || isKeyPressed) {
+			console.log("keyPressed");
 			return;
 		}
 
