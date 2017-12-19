@@ -4,7 +4,6 @@ var dirInCurrentWindow = 0, accumDiff = 0, accumAmp = 0, dirChanges = 0;
 
 var sampleDecisionThreshold = 10, sampleReadRemaining = sampleDecisionThreshold;
 
-
 var currentTabId = -1;
 
 /*
@@ -50,8 +49,7 @@ function identifyGesture(args) {
 	}
 
 	/*
-	 * Cool Down done - process the sample if the values exceed the minimum threshold or
-	 * if there is a definite shift in direction
+	 * Cool Down done - process the sample if the values exceed the minimum threshold
 	 *
 	 * Thresholds determined by experimentation
 	 */

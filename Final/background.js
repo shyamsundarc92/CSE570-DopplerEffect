@@ -62,6 +62,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 /*
  * Performs browser actions pertaining to horizontal gestures in response to
  * messages received from content scripts
+ *
+ * This is because these actions cannot be performed by content scripts
+ * themselves are they are not permitted to do so
  */
 function performAction(request) {
 	var length, newTabIdx;
@@ -99,7 +102,6 @@ function performAction(request) {
 		} else if (request.args.action == "CloseCurrentTab") {
 			chrome.tabs.remove(request.tabId, function() {});
 
-			
 			/*
 			 * Since current tab is closed, enable SoundWave for the now active tab
 			 */
